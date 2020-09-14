@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="live.teekamsuthar.mutify">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,6 +11,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <service
+            android:name=".LoggingService"
+            android:enabled="true" />
+
+        <receiver
+            android:name=".SpotifyBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="TODO">
+
+            <intent-filter>
+                <action android:name="com.spotify.music.playbackstatechanged" />
+                <action android:name="com.spotify.music.metadatachanged" />
+                <action android:name="com.spotify.music.queuechanged" />
+                <action android:name="com.spotify.music.active" />
+            </intent-filter>
+
+        </receiver>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -19,6 +40,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
