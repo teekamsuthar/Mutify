@@ -9,111 +9,211 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAlignment="center"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            style="@style/ToolbarTheme" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="25dp"
+        android:orientation="vertical"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            style="@style/CardViewTheme">
 
-            <TextView
-                android:id="@+id/trackid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="18sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/isPlaying"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="18sp" />
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
 
-        </LinearLayout>
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/adSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="12dp"
+                    android:elevation="8dp"
+                    android:onClick="checkSwitch"
+                    android:scaleX="1.5"
+                    android:scaleY="1.5"
+                    android:text="@string/mute_ads"
+                    app:switchPadding="10dp"
+                    app:thumbTint="@color/colorPrimaryDark"
+                    app:useMaterialThemeColors="true" />
 
-        <TextView
-            android:id="@+id/track"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/album"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textSize="18sp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="12dp"
+                    android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/artist"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/isPlaying"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:textAlignment="center"
+                        android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/length"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/track"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:textAlignment="center"
+                        android:textColor="@color/trackColor"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/playbackPosition"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/songInfoTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:textAlignment="center"
+                        android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/timeSent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textSize="18sp" />
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/playbackPosition"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:layout_marginStart="10dp"-->
+                    <!--                        android:layout_marginEnd="10dp"-->
+                    <!--                        android:textAlignment="center"-->
+                    <!--                        android:textSize="18sp" />-->
 
-        <TextView
-            android:id="@+id/registeredTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textSize="18sp" />
+                    <TextView
+                        android:id="@+id/muteTimer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:textAlignment="center"
+                        android:textSize="16sp" />
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/adSwitch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="12dp"
-            android:elevation="8dp"
-            android:onClick="checkSwitch"
-            android:padding="10dp"
-            android:text="Mute Ads" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:scaleX="1.2"
+                    android:scaleY="1.2"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/previous"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/previous"
+                        android:onClick="handleMedia"
+                        android:src="@drawable/ic_baseline_skip_previous_24" />
+
+                    <ImageButton
+                        android:id="@+id/pause"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/pause"
+                        android:onClick="handleMedia"
+                        android:src="@drawable/ic_baseline_pause_24" />
+
+                    <ImageButton
+                        android:id="@+id/play"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/play"
+                        android:onClick="handleMedia"
+                        android:src="@drawable/ic_baseline_play_arrow_24" />
+
+                    <ImageButton
+                        android:id="@+id/next"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/next"
+                        android:onClick="handleMedia"
+                        android:src="@drawable/ic_baseline_skip_next_24" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/mute"
+                        style="@style/ButtonTheme"
+                        android:layout_marginStart="7dp"
+                        android:onClick="handleMuteUnmute"
+                        android:text="@string/mute" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/openSpotify"
+                        style="@style/ButtonTheme"
+                        android:layout_marginStart="7dp"
+                        android:layout_marginEnd="7dp"
+                        android:onClick="openSpotify"
+                        android:text="@string/open_spotify" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/unMute"
+                        style="@style/ButtonTheme"
+                        android:layout_marginEnd="7dp"
+                        android:onClick="handleMuteUnmute"
+                        android:text="@string/unmute" />
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView1"
+            style="@style/CardViewTheme"
+            android:layout_marginBottom="15dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/titleText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/titleText"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/appDesc"
+                    style="@style/TextViewTheme"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/warningText"
+                    android:textAlignment="center" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

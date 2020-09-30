@@ -3,8 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="live.teekamsuthar.mutify.MainActivity">
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:id="@+id/play_store_link"
+        android:title="@string/rate_app_in_play_store"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/toggleDarkMode"
+        android:checkable="true"
+        android:title="@string/enable_dark_mode"
         app:showAsAction="never" />
 </menu>

@@ -6,6 +6,7 @@
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="@xml/my_backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -13,13 +14,13 @@
         android:theme="@style/AppTheme">
 
         <service
-            android:name=".LoggingService"
+            android:name=".NotificationService"
             android:enabled="true" />
 
         <receiver
             android:name=".SpotifyBroadcastReceiver"
             android:enabled="true"
-            android:exported="true"
+            android:exported="false"
             android:permission="TODO">
 
             <intent-filter>
@@ -33,6 +34,8 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,4 +1,20 @@
 <resources>
     <string name="app_name">Mutify</string>
     <string name="action_settings">Settings</string>
+    <string name="open_spotify">Open Spotify</string>
+    <string name="mute_ads">Mute Ads</string>
+    <string name="mute">Mute</string>
+    <string name="unmute">Unmute</string>
+    <string name="warningText">Ads playing after you skip a track or ads on Spotify startup cannot be muted.</string>
+    <string name="titleText">Allow Mutify to run in the background!</string>
+    <string name="next">next</string>
+    <string name="pause">pause</string>
+    <string name="play">play</string>
+    <string name="previous">previous</string>
+    <string name="enable_dark_mode">Enable Dark-Only Mode</string>
+    <string name="rate_app_in_play_store">Rate App in Play Store</string>
+    <string name="play_state_text">Currently Playing</string>
+    <string name="last_detected_song">Last Detected Song</string>
+    <string name="mute_timer_cancelled">Mute timer cancelled</string>
+    <string name="device_muted">Device is Muted</string>
 </resources>

@@ -1,10 +1,14 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:colorControlNormal">?attr/colorControlNormal</item>
+        <item name="android:statusBarColor">@color/actionBarColor</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -12,8 +16,69 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="MaterialTextViewTheme" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="TextViewTheme" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+
+
+    <style name="ButtonTheme" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/buttonBackground</item>
+        <item name="elevation">15dp</item>
+        <item name="rippleColor">@color/colorPrimary</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:colorControlNormal">?attr/colorControlNormal</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_marginTop">7dp</item>
+        <item name="android:layout_marginBottom">7dp</item>
+    </style>
+
+    <!--    <item name="android:background">@drawable/button_background</item>-->
+
+    <style name="CardViewTheme" parent="Widget.MaterialComponents.CardView">
+        <item name="contentPadding">5dp</item>
+        <item name="cardElevation">7dp</item>
+        <item name="rippleColor">@color/colorPrimary</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="android:backgroundTint">@color/cardViewBackground</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:colorControlNormal">?attr/colorControlNormal</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:layout_marginStart">12dp</item>
+        <item name="android:layout_marginEnd">12dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.DayNight.ActionBar">
+        <item name="background">?attr/colorSurface</item>
+    </style>
+    +
+
+    <style name="ToolbarTheme" parent="Widget.AppCompat.ActionBar">
+        <item name="titleTextColor">?android:attr/textColorPrimary</item>
+        <item name="android:colorControlNormal">?attr/colorControlNormal</item>
+        <item name="android:background">@color/actionBarColor</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="popupTheme">@style/AppTheme.PopupOverlay</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.DayNight" />
 
 </resources>

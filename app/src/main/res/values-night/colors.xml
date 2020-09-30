@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#1DB954</color>
-    <color name="colorPrimaryDark">#191414</color>
-    <color name="colorAccent">#191414</color>
+    <color name="colorPrimary">#191414</color>
+    <color name="colorPrimaryDark">#1DB954</color>
+    <color name="colorAccent">#CDDC39</color>
 
 
     <color name="trackColor">#FF0000</color>
@@ -10,10 +10,10 @@
     <color name="Yellow">#FFFC2B</color>
     <color name="WHITE">#FFFFFF</color>
     <color name="cardBackgroundPositive">#1DB954</color>
-    <color name="cardBackgroundNegative">#FFFFFF</color>
+    <color name="cardBackgroundNegative">#000000</color>
     <color name="actionBarColor">#1DB954</color>
     <color name="buttonBackground">#1DB954</color>
-    <color name="cardViewBackground">#FFFFFFFF</color>
+    <color name="cardViewBackground">#FF424242</color>
     <color name="Black">#000000</color>
 
 

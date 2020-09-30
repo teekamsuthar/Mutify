@@ -16,8 +16,6 @@ public class Song {
                 String album,
                 String track,
                 Integer length,
-                Integer playbackPosition,
-                boolean playing,
                 Long timeSent,
                 Long registeredTime) {
         this.id = id;
@@ -25,12 +23,9 @@ public class Song {
         this.album = album;
         this.track = track;
         this.length = length;
-        this.playbackPosition = playbackPosition;
-        this.playing = playing;
         this.timeSent = timeSent;
         this.registeredTime = registeredTime;
     }
-
 
     public String getId() {
         return id;
@@ -104,12 +99,12 @@ public class Song {
         this.registeredTime = registeredTime;
     }
 
-    public Long timeRemaining() {
-        return (long) (length - playbackPosition);
+    public Long timeRemaining(int playPos) {
+        return (long) (length - playPos);
     }
 
-    public Long getTimeFinish() {
-        return timeSent + timeRemaining();
+    public Long getTimeFinish(int playPos) {
+        return timeSent + timeRemaining(playPos);
     }
 
     public Long getPropagation() {
