@@ -11,6 +11,12 @@
         <item name="android:statusBarColor">@color/actionBarColor</item>
     </style>
 
+    <!-- This will set the fade in animation on all your activities by default -->
+    <style name="WindowAnimationTransition">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -21,7 +27,11 @@
     </style>
 
     <style name="TextViewTheme" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:padding">2dp</item>
+        <item name="android:textAlignment">textStart</item>
     </style>
 
 
@@ -32,13 +42,22 @@
         <item name="cornerRadius">12dp</item>
         <item name="textAllCaps">false</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:textColor">@color/WHITE</item>
         <item name="android:colorControlNormal">?attr/colorControlNormal</item>
         <item name="android:textSize">14sp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
         <item name="android:layout_marginTop">7dp</item>
         <item name="android:layout_marginBottom">7dp</item>
+    </style>
+
+    <style name="TextButtonTheme" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="elevation">15dp</item>
+        <item name="rippleColor">@color/colorPrimary</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/WHITE</item>
     </style>
 
     <!--    <item name="android:background">@drawable/button_background</item>-->
@@ -66,10 +85,14 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.DayNight.ActionBar">
         <item name="background">?attr/colorSurface</item>
+        <item name="android:translationZ">8dp</item>
+        <item name="android:elevation">8dp</item>
+        <item name="titleMarginStart">30dp</item>
     </style>
     +
 
     <style name="ToolbarTheme" parent="Widget.AppCompat.ActionBar">
+        <item name="logo">@drawable/mutify_logo_with_bg</item>
         <item name="titleTextColor">?android:attr/textColorPrimary</item>
         <item name="android:colorControlNormal">?attr/colorControlNormal</item>
         <item name="android:background">@color/actionBarColor</item>

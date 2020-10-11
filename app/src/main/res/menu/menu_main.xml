@@ -3,12 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="live.teekamsuthar.mutify.MainActivity">
     <item
-        android:id="@+id/play_store_link"
-        android:title="@string/rate_app_in_play_store"
+        android:id="@+id/toggleTips"
+        android:checkable="true"
+        android:title="@string/toggle_tips"
         app:showAsAction="never" />
     <item
         android:id="@+id/toggleDarkMode"
         android:checkable="true"
         android:title="@string/enable_dark_mode"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/play_store_link"
+        android:title="@string/rate_app_in_play_store"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/contact_us"
+        android:title="@string/contact_us"
         app:showAsAction="never" />
 </menu>

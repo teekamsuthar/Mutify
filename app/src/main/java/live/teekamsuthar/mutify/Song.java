@@ -31,40 +31,20 @@ public class Song {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getArtist() {
         return artist;
-    }
-
-    public void setArtist(String artist) {
-        this.artist = artist;
     }
 
     public String getAlbum() {
         return album;
     }
 
-    public void setAlbum(String album) {
-        this.album = album;
-    }
-
     public String getTrack() {
         return track;
     }
 
-    public void setTrack(String track) {
-        this.track = track;
-    }
-
     public Integer getLength() {
         return length;
-    }
-
-    public void setLength(Integer length) {
-        this.length = length;
     }
 
     public Integer getPlaybackPosition() {
@@ -79,24 +59,12 @@ public class Song {
         return playing;
     }
 
-    public void setPlaying(boolean playing) {
-        this.playing = playing;
-    }
-
     public Long getTimeSent() {
         return timeSent;
     }
 
-    public void setTimeSent(Long timeSent) {
-        this.timeSent = timeSent;
-    }
-
     public Long getRegisteredTime() {
         return registeredTime;
-    }
-
-    public void setRegisteredTime(Long registeredTime) {
-        this.registeredTime = registeredTime;
     }
 
     public Long timeRemaining(int playPos) {
@@ -107,7 +75,7 @@ public class Song {
         return timeSent + timeRemaining(playPos);
     }
 
-    public Long getPropagation() {
+    public Long getElapsedTime() {
         return System.currentTimeMillis() - timeSent;
     }
 

@@ -1,9 +1,13 @@
 package live.teekamsuthar.mutify;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.preference.PreferenceManager;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -13,6 +17,8 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 public class Utils {
+
+    static final String SPOTIFY_PACKAGE = "com.spotify.music";
 
     public static boolean openApp(Context context, String packageName) {
         PackageManager manager = context.getPackageManager();
@@ -39,30 +45,37 @@ public class Utils {
 
     public static String getTimeStampFromDate(long timeStamp) {
         Date date = new Date(timeStamp);
-        DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+        @SuppressLint("SimpleDateFormat") DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
         formatter.setTimeZone(TimeZone.getDefault());
         return formatter.format(date);
     }
-//            Play store in-app review TODO haven't tested yet.
-//            final ReviewManager manager = ReviewManagerFactory.create(this);
-//            ReviewManager manager = new FakeReviewManager(this);
-//            Task<ReviewInfo> request = manager.requestReviewFlow();
-//            request.addOnCompleteListener(task -> {
-//                if (task.isSuccessful()) {
-//                    // We can get the ReviewInfo object
-//                    ReviewInfo reviewInfo = task.getResult();
-//                    Task<Void> flow = manager.launchReviewFlow(MainActivity.this, reviewInfo);
-//                    flow.addOnCompleteListener(request1 -> {
-//                        System.out.println(request1);
-//                        // The flow has finished. The API does not indicate whether the user
-//                        // reviewed or not, or even whether the review dialog was shown. Thus, no
-//                        // matter the result, we continue our app flow.
-//                    });
-//                    System.out.println(reviewInfo);
-//                } else {
-//                    // There was some problem, continue regardless of the result.
-//                    System.out.println("something went wrong");
-//                }
-//            });
 
+    public static void setBooleanPreferenceValue(Context context, String key, boolean value) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        sp.edit().putBoolean(key, value).apply();
+    }
+
+    public static boolean getBooleanPreferenceValue(Context context, String key) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        return sp.getBoolean(key, true);
+    }
+
+    public static Intent getEmailIntent() {
+        Intent sendEmail = new Intent(Intent.ACTION_SENDTO);
+        String subject = "RE: Mutify feedback/issues";
+        String deviceInfo = "Write your query below: \n\n\n\n\n";
+        deviceInfo += "\n>==================<";
+        deviceInfo += "\n Device Info:";
+        deviceInfo += "\n OS Version: " + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")";
+        deviceInfo += "\n OS API Level: " + android.os.Build.VERSION.SDK_INT;
+        deviceInfo += "\n Device: " + android.os.Build.DEVICE;
+        deviceInfo += "\n Model: " + android.os.Build.MODEL + " (" + android.os.Build.PRODUCT + ")";
+        deviceInfo += "\n>==================<";
+        /* Fill it with Data */
+        sendEmail.setData(Uri.parse("mailto:"));
+        sendEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{"teekam.suthar1@gmail.com"});
+        sendEmail.putExtra(Intent.EXTRA_SUBJECT, subject);
+        sendEmail.putExtra(Intent.EXTRA_TEXT, deviceInfo);
+        return sendEmail;
+    }
 }

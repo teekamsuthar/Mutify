@@ -2,10 +2,10 @@
 <resources>
     <color name="colorPrimary">#1DB954</color>
     <color name="colorPrimaryDark">#191414</color>
-    <color name="colorAccent">#191414</color>
+    <color name="colorAccent">#B2191414</color>
 
 
-    <color name="trackColor">#FF0000</color>
+    <color name="trackColor">#1DB954</color>
     <color name="GREEN">#00FF00</color>
     <color name="Yellow">#FFFC2B</color>
     <color name="WHITE">#FFFFFF</color>

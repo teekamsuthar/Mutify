@@ -3,12 +3,14 @@ package live.teekamsuthar.mutify;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 public class SpotifyBroadcastReceiver extends BroadcastReceiver {
 
     static final class BroadcastTypes {
-        // types of broadcasts that spotify can send!
+        // spotify package
         static final String SPOTIFY_PACKAGE = "com.spotify.music";
+        // types of broadcasts that spotify can send!
         static final String PLAYBACK_STATE_CHANGED = SPOTIFY_PACKAGE + ".playbackstatechanged";
         static final String QUEUE_CHANGED = SPOTIFY_PACKAGE + ".queuechanged";
         static final String METADATA_CHANGED = SPOTIFY_PACKAGE + ".metadatachanged";
@@ -21,6 +23,7 @@ public class SpotifyBroadcastReceiver extends BroadcastReceiver {
         this.receiverCallback = callback;
     }
 
+    // empty constructor to silence manifest warning!
     public SpotifyBroadcastReceiver() {
     }
 
@@ -35,7 +38,7 @@ public class SpotifyBroadcastReceiver extends BroadcastReceiver {
         switch (action) {
             case BroadcastTypes.METADATA_CHANGED:
                 // create a new song from received intent.
-                Song songMetadata = new Song(
+                Song songForMetadata = new Song(
                         intent.getStringExtra("id"),
                         intent.getStringExtra("artist"),
                         intent.getStringExtra("album"),
@@ -44,12 +47,10 @@ public class SpotifyBroadcastReceiver extends BroadcastReceiver {
                         intent.getLongExtra("timeSent", -1L),
                         System.currentTimeMillis()
                 );
-                // Do something with extracted information...
-                receiverCallback.metadataChanged(songMetadata); // callback function
-                // additional things to do
-                // System.out.println("metadata changed!"); // to log activity
-
+                // send it off to MainActivity with callback
+                receiverCallback.metadataChanged(songForMetadata); // callback function
                 break;
+
             case BroadcastTypes.PLAYBACK_STATE_CHANGED:
                 // get info variables
                 boolean playing = intent.getBooleanExtra("playing", false);
@@ -63,15 +64,16 @@ public class SpotifyBroadcastReceiver extends BroadcastReceiver {
                         intent.getLongExtra("timeSent", -1L),
                         System.currentTimeMillis()
                 );
-                // Do something with extracted information
+                // send it off to MainActivity with callback
                 receiverCallback.playbackStateChanged(playing, positionInMs, song);
                 // additional things to do
-                if (playing) {
-                    System.out.println("psc: PLAYING!"); // to log activity for troubleshooting
+                if (playing) { // to log activity
+                    Log.i("PSC", "PLAYING!");
                 } else {
-                    System.out.println("psc: PAUSED!"); // to log activity
+                    Log.i("PSC", "PAUSED!");
                 }
                 break;
+
             case BroadcastTypes.QUEUE_CHANGED:
                 // Sent only as a notification, Mutify app may want to respond accordingly.
                 // Toast.makeText(context, "queue changed", Toast.LENGTH_SHORT).show();

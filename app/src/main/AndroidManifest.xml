@@ -20,8 +20,8 @@
         <receiver
             android:name=".SpotifyBroadcastReceiver"
             android:enabled="true"
-            android:exported="false"
-            android:permission="TODO">
+            android:exported="true"
+            android:permission="android.permission.A">
 
             <intent-filter>
                 <action android:name="com.spotify.music.playbackstatechanged" />

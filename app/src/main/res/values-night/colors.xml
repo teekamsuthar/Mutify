@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#191414</color>
+    <color name="colorPrimary">#1DB954</color>
     <color name="colorPrimaryDark">#1DB954</color>
-    <color name="colorAccent">#CDDC39</color>
+    <color name="colorAccent">#9A00FF00</color>
 
 
-    <color name="trackColor">#FF0000</color>
+    <color name="trackColor">#1DB954</color>
     <color name="GREEN">#00FF00</color>
     <color name="Yellow">#FFFC2B</color>
     <color name="WHITE">#FFFFFF</color>
