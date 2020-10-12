@@ -1,5 +1,5 @@
 
-# <img alt="Logo" src="https://drive.google.com/u/0/uc?id=1m57GX3AEIsF1obnsR6rWiqdGcEZYkOBM&export=download" align="center" height="60"></a>Mutify - mute annoying ads 
+# <img alt="Logo" src="https://drive.google.com/u/1/uc?id=1Y5WXSdqaS4bruYLRibYg_N5GEQbkXYBf&export=download" align="center" height="60"></a>Mutify - mute annoying ads 
 
 A powerful, light-weight & permission-free Spotify Ad silencing app built using Java for Android.
 
