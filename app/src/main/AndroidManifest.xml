@@ -3,6 +3,10 @@
     package="live.teekamsuthar.mutify">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!--for android 11 https://developer.android.com/training/basics/intents/package-visibility?hl=de#package-name-->
+    <queries>
+        <package android:name="com.spotify.music" />
+    </queries>
 
     <application
         android:allowBackup="true"
@@ -39,7 +43,6 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

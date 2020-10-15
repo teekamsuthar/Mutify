@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
     private CardView songCardView, tipsCardView;
     private SpotifyBroadcastReceiver spotifyBroadcastReceiver;
     private AudioManager audioManager;
-    private TextView songInfoTextView, track, isPlaying;
+    private TextView songInfoTextView, track, isPlaying, lastUpdated;
     private int playbackPosition;
     private ScheduledFuture<?> scheduledMute, scheduledUnMute;
     ScheduledExecutorService scheduledMuteExecutorService, scheduledUnMuteExecutorService;
@@ -71,10 +71,12 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         setSupportActionBar(toolbar);
         // init switch
         adSwitch = findViewById(R.id.adSwitch);
+        adSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> checkSwitch(isChecked));
         // initialize all TextViews
         track = findViewById(R.id.track);
         songInfoTextView = findViewById(R.id.songInfoTextView);
         isPlaying = findViewById(R.id.isPlaying);
+        lastUpdated = findViewById(R.id.lastUpdated);
         songCardView = findViewById(R.id.cardView);
         tipsCardView = findViewById(R.id.cardView1);
         togglePlayPause = findViewById(R.id.togglePlayPause);
@@ -94,8 +96,9 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
     public void metadataChanged(Song song) {
         // live update TextView when metadata changed
         track.setText(String.format("%s (%s)", song.getTrack(), getTimeStamp(song.getLength())));
-        songInfoTextView.setText(String.format("By %s\nFrom %s\nas last updated at -> %s",
-                song.getArtist(), song.getAlbum(), getTimeStampFromDate(song.getTimeSent())));
+        songInfoTextView.setText(String.format("By %s\nFrom %s",
+                song.getArtist(), song.getAlbum()));
+        lastUpdated.setText(String.format("(info updated @%s)", getTimeStampFromDate(song.getTimeSent())));
         // log new song
         Log.i("New Song", song.getTrack());
     }
@@ -216,9 +219,9 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         songCardView.setCardBackgroundColor(getResources().getColor(R.color.cardBackgroundNegative));
     }
 
-    public void checkSwitch(View view) {
+    public void checkSwitch(boolean isChecked) {
         notificationService = new Intent(MainActivity.this, NotificationService.class);
-        if (adSwitch.isChecked()) {
+        if (isChecked) {
             // make sure spotify is installed before starting the service
             if (isSpotifyInstalled()) {
                 startService();
@@ -268,6 +271,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         songInfoTextView.setText("");
         isPlaying.setText("");
         track.setText("");
+        lastUpdated.setText("");
 //        muteTimer.setText("");
         Toast.makeText(MainActivity.this, "Service stopped...", Toast.LENGTH_SHORT).show();
     }
@@ -324,8 +328,6 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         }
-        // turn off switch when UI change.
-        resetSwitchWhenUiChange();
         // show/hide tips toggle
         menu.findItem(R.id.toggleTips).setChecked(prefs.getBoolean("hide_tips", false));
         if (menu.findItem(R.id.toggleTips).isChecked()) {
@@ -345,7 +347,6 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         }
         if (id == R.id.toggleDarkMode) {
             item.setChecked(!item.isChecked());
-            resetSwitchWhenUiChange();
             if (item.isChecked()) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 prefs.edit().putBoolean("enabled", true).apply();
@@ -375,12 +376,6 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         return super.onOptionsItemSelected(item);
     }
 
-    private void resetSwitchWhenUiChange() {
-        if (adSwitch.isChecked()) {
-            adSwitch.setChecked(false); // uncheck switch after UI change
-        }
-    }
-
     public void showSupportToast(View view) {
         Toast infoToast = new Toast(this);
         infoToast.setGravity(Gravity.CENTER, 0, 0);
@@ -388,45 +383,39 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
     }
 
     public void handleMuteUnmute(View view) {
-        switch (view.getId()) {
-            case R.id.unMute:
-                unmute();
-                break;
-            case R.id.mute:
-                mute();
-                break;
+        int id = view.getId();
+        if (id == R.id.unMute) {
+            unmute();
+        } else if (id == R.id.mute) {
+            mute();
         }
     }
 
     public void handleMedia(View view) {
         int id = view.getId();
-        switch (id) {
-            case R.id.previous:
-                if (audioManager.isMusicActive()) {
-                    KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
-                    audioManager.dispatchMediaKeyEvent(event);
-                }
-                break;
-            case R.id.togglePlayPause:
-                // get music playing info
-                boolean isMusicActive = audioManager.isMusicActive();
-                // send play/pause broadcast
-                if (isMusicActive) {
-                    KeyEvent pause = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE);
-                    audioManager.dispatchMediaKeyEvent(pause);
-                    updatePlayPauseButton(false);
-                } else {
-                    KeyEvent play = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY);
-                    audioManager.dispatchMediaKeyEvent(play);
-                    updatePlayPauseButton(true);
-                }
-                break;
-            case R.id.next:
-                if (audioManager.isMusicActive()) {
-                    KeyEvent next = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT);
-                    audioManager.dispatchMediaKeyEvent(next);
-                }
-                break;
+        // replaced switch statements with if-else because https://stackoverflow.com/q/63290845/11141100
+        if (id == R.id.previous) {
+            if (audioManager.isMusicActive()) {
+                KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+                audioManager.dispatchMediaKeyEvent(event);
+            }
+        } else if (id == R.id.togglePlayPause) {// get music playing info
+            boolean isMusicActive = audioManager.isMusicActive();
+            // send play/pause broadcast
+            if (isMusicActive) {
+                KeyEvent pause = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE);
+                audioManager.dispatchMediaKeyEvent(pause);
+                updatePlayPauseButton(false);
+            } else {
+                KeyEvent play = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY);
+                audioManager.dispatchMediaKeyEvent(play);
+                updatePlayPauseButton(true);
+            }
+        } else if (id == R.id.next) {
+            if (audioManager.isMusicActive()) {
+                KeyEvent next = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT);
+                audioManager.dispatchMediaKeyEvent(next);
+            }
         }
     }
 

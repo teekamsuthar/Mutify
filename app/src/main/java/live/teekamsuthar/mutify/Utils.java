@@ -61,6 +61,7 @@ public class Utils {
     }
 
     public static Intent getEmailIntent() {
+        // TODO add app version in device info var
         Intent sendEmail = new Intent(Intent.ACTION_SENDTO);
         String subject = "RE: Mutify feedback/issues";
         String deviceInfo = "Write your query below: \n\n\n\n\n";
