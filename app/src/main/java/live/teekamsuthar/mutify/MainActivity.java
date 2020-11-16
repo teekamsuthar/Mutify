@@ -1,8 +1,11 @@
 package live.teekamsuthar.mutify;
 
+import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -19,9 +22,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -29,9 +35,20 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.InstallStateUpdatedListener;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.InstallStatus;
+import com.google.android.play.core.install.model.UpdateAvailability;
+import com.google.android.play.core.tasks.Task;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -40,6 +57,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static com.google.android.play.core.install.model.ActivityResult.RESULT_IN_APP_UPDATE_FAILED;
+import static com.google.android.play.core.install.model.AppUpdateType.FLEXIBLE;
+import static live.teekamsuthar.mutify.StopServiceBroadcastReceiver.shouldCloseService;
 import static live.teekamsuthar.mutify.Utils.SPOTIFY_PACKAGE;
 import static live.teekamsuthar.mutify.Utils.getEmailIntent;
 import static live.teekamsuthar.mutify.Utils.getTimeStamp;
@@ -50,18 +70,21 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
 
     private static final String TAG = "MAIN_ACTIVITY";
     private ImageButton togglePlayPause;
+    private LinearLayout mediaButtons;
     private Intent notificationService;
-    private SwitchMaterial adSwitch;
-    private CardView songCardView, tipsCardView;
+    private static SwitchMaterial adSwitch;
+    private CardView tipsCardView;
     private SpotifyBroadcastReceiver spotifyBroadcastReceiver;
     private AudioManager audioManager;
     private TextView songInfoTextView, track, isPlaying, lastUpdated;
     private int playbackPosition;
     private ScheduledFuture<?> scheduledMute, scheduledUnMute;
+    private ImageView surpriseImageView;
+    private AppUpdateManager appUpdateManager;
+    private static final int MY_REQUEST_CODE = 17326;
+    private static final String IN_APP_UPDATE = "InAppUpdateInfo";
     ScheduledExecutorService scheduledMuteExecutorService, scheduledUnMuteExecutorService;
     SharedPreferences prefs;
-//    private boolean isMuted;
-//    private boolean isPlaying = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        // init notification service intent
+        notificationService = new Intent(MainActivity.this, NotificationService.class);
         // init switch
         adSwitch = findViewById(R.id.adSwitch);
         adSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> checkSwitch(isChecked));
@@ -77,19 +102,26 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         songInfoTextView = findViewById(R.id.songInfoTextView);
         isPlaying = findViewById(R.id.isPlaying);
         lastUpdated = findViewById(R.id.lastUpdated);
-        songCardView = findViewById(R.id.cardView);
         tipsCardView = findViewById(R.id.cardView1);
+        surpriseImageView = findViewById(R.id.imageView);
+        surpriseImageView.setImageResource(getRandomImage());
+        // ability to change images
+        surpriseImageView.setOnClickListener(v -> surpriseImageView.setImageResource(getRandomImage()));
         togglePlayPause = findViewById(R.id.togglePlayPause);
+        mediaButtons = findViewById(R.id.mediaButtons);
+        mediaButtons.setVisibility(View.GONE);
         // init audio manager
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         // init the broadcast listener with callback
         spotifyBroadcastReceiver = new SpotifyBroadcastReceiver(this);
         // init shared prefs
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        // check if Device is muted
-        isDeviceMuted();
+        // check if Device currently muted or not
+        updateMuteIndicator();
         // check for first time launch
         isFirstTimeLaunch();
+        // check for update
+        checkIfUpdateAvailable();
     }
 
     @Override
@@ -138,11 +170,9 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         return songFromIntent.timeRemaining(playbackPosition) - songFromIntent.getElapsedTime();
     }
 
-
     private void cancelMuteTimer(String cause) {
         if (scheduledMute != null && !scheduledMute.isCancelled()) {
             if (scheduledMute.cancel(false)) {
-//                muteTimer.setText(R.string.mute_timer_cancelled);
                 Log.v(cause, "Mute timer cancelled...");
             } else {
                 Log.w(cause, "Mute timer couldn't be cancelled...");
@@ -153,13 +183,13 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
     }
 
     private void setMuteTimer(final long waitTime) {
-        // Create the scheduler & spawn a new thread pool with each timer TODO figure what will be most appropriate size of core pool?
+        // Create the scheduler & spawn a new thread pool with each timer.
         scheduledMuteExecutorService = Executors.newScheduledThreadPool(1);
         // Create the task to execute
         final Runnable muteTask = () -> {
             try {
                 mute();
-                // https://stackoverflow.com/a/48181646/11141100 TODO verify if app freezing after some time is fixed.
+                // to avoid app freeze because of exception in thread https://stackoverflow.com/a/48181646/11141100
                 if (scheduledMute.isDone()) {
                     scheduledMute.get(5, TimeUnit.SECONDS);
                 }
@@ -169,8 +199,6 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
             }
         };
         scheduledMute = scheduledMuteExecutorService.schedule(muteTask, waitTime, TimeUnit.MILLISECONDS);
-        // TODO should I put scheduledMute.shutdown() here?
-//        muteTimer.setText(String.format("Muting in: %s", getTimeStamp(waitTime)));
         Log.i("Muting in:", getTimeStamp(waitTime));
     }
 
@@ -203,9 +231,8 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
             } else {
                 audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
             }
-//            muteTimer.setText(R.string.device_muted);
             Log.i("MUTED!", "device is muted");
-            songCardView.setCardBackgroundColor(getResources().getColor(R.color.cardBackgroundPositive));
+            updateMuteIndicator();
         }
     }
 
@@ -216,11 +243,11 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
             audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
         }
         Log.i("UN-MUTED", "volume restored.");
-        songCardView.setCardBackgroundColor(getResources().getColor(R.color.cardBackgroundNegative));
+        updateMuteIndicator();
+        //  songCardView.setCardBackgroundColor(getResources().getColor(R.color.cardBackgroundNegative));
     }
 
     public void checkSwitch(boolean isChecked) {
-        notificationService = new Intent(MainActivity.this, NotificationService.class);
         if (isChecked) {
             // make sure spotify is installed before starting the service
             if (isSpotifyInstalled()) {
@@ -229,14 +256,19 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
                 // if not installed, flick the switch back to off
                 adSwitch.setChecked(!adSwitch.isChecked());
                 // notify user // TODO: show a dialog instead
-                Toast.makeText(this, "Spotify is not installed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Spotify is not installed", Toast.LENGTH_LONG).show();
             }
+            // show media buttons when service is on
+            mediaButtons.setVisibility(View.VISIBLE);
         } else {
             stopService();
+            // hide media buttons when service is off
+            mediaButtons.setVisibility(View.GONE);
         }
     }
 
     private void startService() {
+        // create notification for Android above O
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(notificationService);
         } else {
@@ -246,9 +278,8 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         IntentFilter filter = new IntentFilter();
         filter.addAction(SpotifyBroadcastReceiver.BroadcastTypes.PLAYBACK_STATE_CHANGED);
         filter.addAction(SpotifyBroadcastReceiver.BroadcastTypes.METADATA_CHANGED);
-
+        // register Spotify broadcast listener.
         registerReceiver(spotifyBroadcastReceiver, filter);
-        Toast.makeText(MainActivity.this, "Enjoy your ad-free music ;)", Toast.LENGTH_SHORT).show();
     }
 
     private void stopService() {
@@ -267,24 +298,32 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
             Log.wtf("error while stopping", e.getMessage());
         }
         stopService(notificationService); // stop logging service
-        cancelMuteTimer("service stopped");
+        cancelMuteTimer("Service Stopped");
+        // clear text-views
         songInfoTextView.setText("");
         isPlaying.setText("");
         track.setText("");
         lastUpdated.setText("");
-//        muteTimer.setText("");
-        Toast.makeText(MainActivity.this, "Service stopped...", Toast.LENGTH_SHORT).show();
     }
 
+    // returns device's music volume
     private int getMusicVolume() {
         return audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
     }
 
+    // returns true if Music Vol is 0
     private boolean isDeviceMuted() {
         return getMusicVolume() == 0;
     }
 
-    public void openSpotify(View view) {
+    // open Spotify button
+    public void handleOpenSpotify(View view) {
+        // open Spotify
+        openSpotify();
+    }
+
+    // attempt to open Spotify if already installed, else show error toast
+    public void openSpotify() {
         if (isSpotifyInstalled()) {
             openApp(getApplicationContext(), SPOTIFY_PACKAGE);
         } else {
@@ -292,28 +331,82 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         }
     }
 
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        System.out.println("ON DESTROY");
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        System.out.println("ON PAUSE");
-//    }
+    // returns true when notification service is running in the background
+    private boolean isNotificationServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (NotificationService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void updateMuteIndicator() {
+        if (isDeviceMuted()) {
+            // change nav-bar color to indicate the device muted.
+            getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.Red));
+        } else {
+            // change nav-bar color to indicate device un-muted.
+            getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        }
+    }
+
+    // returns a random image resource id from the ArrayList
+    private static int getRandomImage() {
+        List<Integer> items = new ArrayList<>();
+        items.add(R.drawable.ic_music_re);
+        items.add(R.drawable.ic_compose_music);
+        items.add(R.drawable.ic_happy_music);
+        items.add(R.drawable.ic_audio_player);
+        items.add(R.drawable.ic_meditating);
+        items.add(R.drawable.ic_listening);
+        items.add(R.drawable.ic_reading);
+        items.add(R.drawable.ic_walk_in_the_city);
+        return items.get(new Random().nextInt(items.size()));
+    }
+
+    // check switch if service is already running & restore switch's "running" state when app bring to foreground.
+    private void checkServiceState() {
+        if (isNotificationServiceRunning() && !prefs.getBoolean("auto-launch-spotify", false) && !shouldCloseService) {
+            adSwitch.setChecked(true);
+            Log.d(TAG, "Turned switch on after activity was destroyed!");
+        }
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
         // insures correct play/pause drawable is shown at resume
         updatePlayPauseButton(audioManager.isMusicActive());
+        // check if the device currently muted or not
+        updateMuteIndicator();
+        // check if service is already running.
+        checkServiceState();
+        // prompt user if a new update has already downloaded and ready to be installed.
+        appUpdateManager.getAppUpdateInfo().addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+                notifyUserToUpdate();
+            }
+        });
+//        // when stop action triggered from notification.
+//        if (shouldCloseService) {
+//            shouldCloseService = false;
+//            Toast.makeText(this, "Shutting down...", Toast.LENGTH_SHORT).show();
+//            adSwitch.setChecked(false);
+//            this.finishAndRemoveTask();
+//        }
     }
+
+    public static void closeSwitch() {
+        adSwitch.setChecked(false);
+        shouldCloseService = false;
+    }
+
 
     @Override
     public void onBackPressed() {
-        // to send app in background when back key is pressed
+        // to send app in background when back key pressed
         moveTaskToBack(true);
     }
 
@@ -331,9 +424,18 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         // show/hide tips toggle
         menu.findItem(R.id.toggleTips).setChecked(prefs.getBoolean("hide_tips", false));
         if (menu.findItem(R.id.toggleTips).isChecked()) {
-            tipsCardView.setVisibility(View.GONE);
+            hideTips();
         } else {
-            tipsCardView.setVisibility(View.VISIBLE);
+            showTips();
+        }
+        // auto-launch spotify
+        menu.findItem(R.id.autoLaunchSpotify).setChecked(prefs.getBoolean("auto-launch-spotify", false));
+        if (menu.findItem(R.id.autoLaunchSpotify).isChecked()) {
+            if (isSpotifyInstalled()) {
+                // start service and then launch Spotify
+                adSwitch.setChecked(true);
+                openSpotify();
+            }
         }
         return true;
     }
@@ -360,10 +462,19 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
             item.setChecked(!item.isChecked());
             if (item.isChecked()) {
                 prefs.edit().putBoolean("hide_tips", true).apply();
-                tipsCardView.setVisibility(View.GONE);
+                hideTips();
             } else {
                 prefs.edit().putBoolean("hide_tips", false).apply();
-                tipsCardView.setVisibility(View.VISIBLE);
+                showTips();
+            }
+            return true;
+        }
+        if (id == R.id.autoLaunchSpotify) {
+            item.setChecked(!item.isChecked());
+            if (item.isChecked()) {
+                prefs.edit().putBoolean("auto-launch-spotify", true).apply();
+            } else {
+                prefs.edit().putBoolean("auto-launch-spotify", false).apply();
             }
             return true;
         }
@@ -371,9 +482,19 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
             /* get email Intent */
             Intent sendEmail = getEmailIntent();
             /* Send it off to the Activity-Chooser */
-            startActivity(Intent.createChooser(sendEmail, "Choose an email client to send your feedback!"));
+            startActivity(Intent.createChooser(sendEmail, "Choose an email app to send your feedback!"));
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void hideTips() {
+        tipsCardView.setVisibility(View.GONE);
+        surpriseImageView.setVisibility(View.VISIBLE);
+    }
+
+    private void showTips() {
+        tipsCardView.setVisibility(View.VISIBLE);
+        surpriseImageView.setVisibility(View.GONE);
     }
 
     public void showSupportToast(View view) {
@@ -384,6 +505,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
 
     public void handleMuteUnmute(View view) {
         int id = view.getId();
+        // handle taps on mute/unMute buttons
         if (id == R.id.unMute) {
             unmute();
         } else if (id == R.id.mute) {
@@ -419,6 +541,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         }
     }
 
+    // updates the drawable for play/pause button
     private void updatePlayPauseButton(boolean isMusicActive) {
         if (isMusicActive) {
             togglePlayPause.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_baseline_pause));
@@ -427,6 +550,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         }
     }
 
+    // checks if the app has started for the first time
     private void isFirstTimeLaunch() {
         if (Utils.getBooleanPreferenceValue(this, "isFirstTimeLaunch")) {
             showAlertDialog();
@@ -434,6 +558,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         }
     }
 
+    // show a dialog to enable device broadcast status from spotify.
     private void showAlertDialog() {
         // defining custom text views
         TextView titleView = new TextView(this);
@@ -466,8 +591,10 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     Intent spotifySettings = new Intent("android.intent.action.APPLICATION_PREFERENCES").setPackage(SPOTIFY_PACKAGE);
                     startActivity(spotifySettings);
+                    Toast.makeText(this, "Scroll down and Enable Device Broadcast Status…", Toast.LENGTH_LONG).show();
                 } else {
-                    openApp(this, SPOTIFY_PACKAGE);
+                    openSpotify();
+                    Toast.makeText(this, "Enable Device Broadcast Status from Spotify settings…", Toast.LENGTH_LONG).show();
                 }
             } else {
                 Toast.makeText(this, "Couldn't find Spotify installed!", Toast.LENGTH_SHORT).show();
@@ -479,6 +606,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         });
     }
 
+    // returns true if Spotify installed on device
     private boolean isSpotifyInstalled() {
         final PackageManager packageManager = this.getPackageManager();
         Intent intent = packageManager.getLaunchIntentForPackage(SPOTIFY_PACKAGE);
@@ -489,6 +617,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         return !list.isEmpty();
     }
 
+    // open Play Store app for rate & review
     private void redirectToPlayStore() {
         try {
             Uri updateUrl = Uri.parse("market://details?id=" + getPackageName());
@@ -512,7 +641,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
 //                ReviewInfo reviewInfo = task.getResult();
 //                Task<Void> flow = manager.launchReviewFlow(this, reviewInfo);
 //                flow.addOnCompleteListener(task2 -> {
-//                    // The flow has finished. The API does not indicate whether the user
+//                    // The flow has finished. The API does not indicate whether the user.
 //                    // reviewed or not, or even whether the review dialog was shown. Thus, no
 //                    // matter the result, we continue our app flow.
 //                });
@@ -520,5 +649,98 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
 //                // There was some problem, continue regardless of the result.
 //            }
 //        });
+    }
+
+    // In-app update flexible workflow https://stackoverflow.com/a/57221648/11141100
+    private void checkIfUpdateAvailable() {
+        appUpdateManager = AppUpdateManagerFactory.create(this);
+        appUpdateManager.registerListener(listener);
+        Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+        appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                    && appUpdateInfo.isUpdateTypeAllowed(FLEXIBLE)) {
+                requestUpdate(appUpdateInfo);
+                Log.i(IN_APP_UPDATE, "Update is Available");
+            } else if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_NOT_AVAILABLE) {
+                Log.i(IN_APP_UPDATE, "Update isn't Available");
+            } else {
+                Log.i(IN_APP_UPDATE, "Something went wrong!");
+            }
+            Log.i(IN_APP_UPDATE, "packageName: " + appUpdateInfo.packageName()
+                    + "|" + "availableVersionCode: " + appUpdateInfo.availableVersionCode()
+                    + "|" + "updateAvailability: " + appUpdateInfo.updateAvailability()
+                    + "|" + "installStatus: " + appUpdateInfo.installStatus());
+        });
+    }
+
+    private void requestUpdate(AppUpdateInfo appUpdateInfo) {
+        try {
+            appUpdateManager.startUpdateFlowForResult(appUpdateInfo, AppUpdateType.FLEXIBLE, MainActivity.this, MY_REQUEST_CODE);
+        } catch (IntentSender.SendIntentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressLint("SwitchIntDef")
+    final InstallStateUpdatedListener listener = installState -> {
+        final int installStatus = installState.installStatus();
+        switch (installStatus) {
+            case InstallStatus.DOWNLOADED:
+                notifyUserToUpdate(); // notify user to install downloaded update
+                Log.d(IN_APP_UPDATE, "Update Downloaded");
+                break;
+            case InstallStatus.FAILED:
+                Toast.makeText(this, "Failed to Install an Update for Mutify…", Toast.LENGTH_LONG).show();
+                Log.d(IN_APP_UPDATE, "Failed");
+                break;
+            // for logging purpose only
+            case InstallStatus.INSTALLED:
+                Log.d(IN_APP_UPDATE, "Installed");
+                break;
+            default:
+                Log.d(IN_APP_UPDATE, "Pending…");
+                break;
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // unregister listener for In app update
+        appUpdateManager.unregisterListener(listener);
+    }
+
+    private void notifyUserToUpdate() {
+        Snackbar snackbar =
+                Snackbar.make(findViewById(android.R.id.content),
+                        "An update has just been downloaded… Restart?",
+                        Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction("RESTART", view -> appUpdateManager.completeUpdate());
+        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+        snackbar.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == MY_REQUEST_CODE) {
+            switch (resultCode) {
+                case RESULT_OK:
+                    Toast.makeText(this, "Downloading update…", Toast.LENGTH_LONG).show();
+                    Log.d(IN_APP_UPDATE, "Downloading update: " + resultCode);
+                    break;
+                case RESULT_CANCELED:
+                    Toast.makeText(this, "Update Canceled…", Toast.LENGTH_LONG).show();
+                    Log.d(IN_APP_UPDATE, "Update Canceled: " + resultCode);
+                    break;
+                case RESULT_IN_APP_UPDATE_FAILED:
+                    Toast.makeText(this, "Update Failed…", Toast.LENGTH_LONG).show();
+                    Log.d(IN_APP_UPDATE, "Update Failed: " + resultCode);
+                    break;
+                default:
+                    Log.d(IN_APP_UPDATE, "Something went wrong: " + resultCode);
+                    break;
+            }
+        }
     }
 }
