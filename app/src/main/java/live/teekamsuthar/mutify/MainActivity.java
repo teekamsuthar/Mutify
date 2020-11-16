@@ -67,7 +67,7 @@ import static live.teekamsuthar.mutify.Utils.getTimeStampFromDate;
 import static live.teekamsuthar.mutify.Utils.openApp;
 
 public class MainActivity extends AppCompatActivity implements ReceiverCallback {
-
+    // global vars
     private static final String TAG = "MAIN_ACTIVITY";
     private ImageButton togglePlayPause;
     private LinearLayout mediaButtons;
