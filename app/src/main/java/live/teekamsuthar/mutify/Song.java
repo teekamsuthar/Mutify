@@ -1,15 +1,15 @@
 package live.teekamsuthar.mutify;
 
 public class Song {
-    private String id;
-    private String artist;
-    private String album;
-    private String track;
-    private Integer length;
+    private final String id;
+    private final String artist;
+    private final String album;
+    private final String track;
+    private final Integer length;
     private Integer playbackPosition;
     private boolean playing;
-    private Long timeSent;
-    private Long registeredTime;
+    private final Long timeSent;
+    private final Long registeredTime;
 
     public Song(String id,
                 String artist,

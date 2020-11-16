@@ -61,17 +61,17 @@ public class Utils {
     }
 
     public static Intent getEmailIntent() {
-        // TODO add app version in device info var
         Intent sendEmail = new Intent(Intent.ACTION_SENDTO);
         String subject = "RE: Mutify feedback/issues";
-        String deviceInfo = "Write your query below: \n\n\n\n\n";
-        deviceInfo += "\n>==================<";
+        String deviceInfo = "Write your query below⬇ \n\n\n\n\n\n\n\n\n";
+        deviceInfo += "\n>======(please keep this info)=======<";
+        deviceInfo += "\n Version code: " + BuildConfig.VERSION_CODE;
         deviceInfo += "\n Device Info:";
-        deviceInfo += "\n OS Version: " + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")";
+//        deviceInfo += "\n OS Version: " + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")";
         deviceInfo += "\n OS API Level: " + android.os.Build.VERSION.SDK_INT;
         deviceInfo += "\n Device: " + android.os.Build.DEVICE;
         deviceInfo += "\n Model: " + android.os.Build.MODEL + " (" + android.os.Build.PRODUCT + ")";
-        deviceInfo += "\n>==================<";
+//        deviceInfo += "\n>==================<";
         /* Fill it with Data */
         sendEmail.setData(Uri.parse("mailto:"));
         sendEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{"teekam.suthar1@gmail.com"});

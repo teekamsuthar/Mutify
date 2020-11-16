@@ -52,9 +52,12 @@
                         app:thumbTint="@color/colorPrimaryDark"
                         app:useMaterialThemeColors="true" />
 
+                    <!--                        android:thumb="@drawable/switch_thumb_selector"-->
+                    <!--                        app:track="@drawable/switch_track_selector"-->
                     <!--                        android:onClick="checkSwitch"-->
 
                     <LinearLayout
+                        android:id="@+id/songInfoLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="12dp"
@@ -101,6 +104,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/mediaButtons"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -156,7 +160,7 @@
                                 style="@style/ButtonTheme"
                                 android:layout_marginStart="7dp"
                                 android:layout_marginEnd="7dp"
-                                android:onClick="openSpotify"
+                                android:onClick="handleOpenSpotify"
                                 android:text="@string/open_spotify" />
 
                             <com.google.android.material.button.MaterialButton
@@ -171,6 +175,15 @@
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="10dp"
+                android:layout_marginTop="30dp"
+                android:contentDescription="@string/music_image" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView1"

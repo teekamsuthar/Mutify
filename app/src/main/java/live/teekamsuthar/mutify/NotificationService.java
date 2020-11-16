@@ -7,25 +7,25 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import java.util.Objects;
-
 public class NotificationService extends Service {
 
     public static final String NOTIFICATION_CHANNEL_ID_SERVICE = "live.teekamsuthar.mutify.service";
-    public static final String NOTIFICATION_CHANNEL_ID_INFO = "live.teekamsuthar.mutify.notification_info";
-    private static final String ACTION_STOP = "STOP_SERVICE";
+    public static final String NOTIFICATION_CHANNEL_ID_INFO = "Ad muting service";
+    public static final String ACTION_STOP = "STOP_SERVICE";
 
     @Override
     public void onCreate() {
         super.onCreate();
         // action to be added in the notification
-        Intent intent = new Intent(getApplicationContext(), NotificationService.class).setAction(ACTION_STOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_mute, "Stop", pendingIntent).build();
+        Intent intent = new Intent(this, StopServiceBroadcastReceiver.class);
+        intent.putExtra("Action", ACTION_STOP);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_baseline_close_24, "Stop", pendingIntent).build();
 
         // create notification channel for devices above api 26/Oreo
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -34,21 +34,31 @@ public class NotificationService extends Service {
             manager.createNotificationChannel(channel);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID_SERVICE)
                     .setContentTitle("Mutify Service")
-                    .setContentText("Allow Mutify to run in background to mute ads.")
+                    .setContentText("Mutify is running in the background.")
                     .setContentIntent(notificationPendingIntent())
-                    .setSmallIcon(R.drawable.mutify_logo);
+                    .addAction(action)
+                    .setSmallIcon(R.drawable.mutify_logo_without_bg);
             startForeground(101, builder.build());
         }
+        Toast.makeText(this, "Enjoy your ad-free music ;)", Toast.LENGTH_SHORT).show();
     }
+
+//    @Override
+//    public int onStartCommand(Intent intent, int flags, int startId) {
+//        if (intent != null && intent.getAction() != null) {
+//            if (intent.getAction().equals(ACTION_STOP)) {
+//                System.out.println("Stopped");
+//            }
+//        }
+//        return START_STICKY;
+//    }
+
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (Objects.equals(intent.getAction(), ACTION_STOP)) {
-            System.out.println("SERVICE STOPPED");
-        }
-        return START_STICKY;
+    public void onDestroy() {
+        super.onDestroy();
+        Toast.makeText(this, "Service stopped...", Toast.LENGTH_SHORT).show();
     }
-
 
     private PendingIntent notificationPendingIntent() {
         final Intent notificationIntent = new Intent(this, MainActivity.class);
