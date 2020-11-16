@@ -27,4 +27,6 @@
     <string name="dialog_positive_btn">Open Spotify</string>
     <string name="dialog_negative_btn">I have enabled it</string>
     <string name="contact_us">Contact Us</string>
+    <string name="auto_launch_spotify">Auto-launch Spotify</string>
+    <string name="music_image">Music Image</string>
 </resources>

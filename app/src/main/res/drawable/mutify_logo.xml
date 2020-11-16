@@ -9,17 +9,17 @@
     <group>
         <group>
             <path
-                android:strokeColor="#CC191414"
+                android:pathData="M203.15 63.63c51.7 0 79.44 39.5 80.85 79.46c0 38.7-24.67 82.23-80.85 82.23"
                 android:strokeWidth="10"
-                android:pathData="M203.15 63.63c51.7 0 79.44 39.5 80.85 79.46c0 38.7-24.67 82.23-80.85 82.23" />
+                android:strokeColor="#CC191414" />
             <path
-                android:strokeColor="#B3191414"
+                android:pathData="M203.15 86.54c34.47 0 55.66 28.63 56.6 57.26c0 27.73-19.14 58.62-56.6 58.62"
                 android:strokeWidth="10"
-                android:pathData="M203.15 86.54c34.47 0 55.66 28.63 56.6 57.26c0 27.73-19.14 58.62-56.6 58.62" />
+                android:strokeColor="#B3191414" />
             <path
-                android:strokeColor="#99191414"
+                android:pathData="M203.15 113.48c21.55 0 33.1 15.15 33.69 30.47c0 14.83-10.28 31.52-33.69 31.52"
                 android:strokeWidth="10"
-                android:pathData="M203.15 113.48c21.55 0 33.1 15.15 33.69 30.47c0 14.83-10.28 31.52-33.69 31.52" />
+                android:strokeColor="#99191414" />
         </group>
         <path
             android:fillColor="#CC191414"
@@ -46,9 +46,9 @@
         </group>
         <group>
             <path
-                android:strokeColor="#ED191414"
+                android:pathData="M250.83 255.44L49.3 53.91"
                 android:strokeWidth="15"
-                android:pathData="M250.83 255.44L49.3 53.91" />
+                android:strokeColor="#ED191414" />
         </group>
     </group>
 </vector>

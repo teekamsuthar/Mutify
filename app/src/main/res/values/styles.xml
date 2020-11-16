@@ -9,6 +9,7 @@
         <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:colorControlNormal">?attr/colorControlNormal</item>
         <item name="android:statusBarColor">@color/actionBarColor</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
     </style>
 
     <!-- This will set the fade in animation on all your activities by default -->

@@ -13,6 +13,11 @@
         android:title="@string/enable_dark_mode"
         app:showAsAction="never" />
     <item
+        android:id="@+id/autoLaunchSpotify"
+        android:checkable="true"
+        android:title="@string/auto_launch_spotify"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/play_store_link"
         android:title="@string/rate_app_in_play_store"
         app:showAsAction="never" />

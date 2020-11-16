@@ -15,6 +15,7 @@
     <color name="buttonBackground">#1DB954</color>
     <color name="cardViewBackground">#FFFFFFFF</color>
     <color name="Black">#000000</color>
+    <color name="Red">#B2FF0000</color>
 
 
 </resources>

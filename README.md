@@ -34,13 +34,12 @@ If you love Mutify, feel free to fork the repo and contribute on [github](https:
 <a href="https://play.google.com/store/apps/details?id=live.teekamsuthar.mutify"> <img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" align="center" height="120"></a>
 <br>
 
-If there is an issue or feature request, please send me an email at teekam.suthar1@gmail.com or create a issue on [github](https://github.com/teekamsuthar/Mutify/issues).
+If there is an issue or feature request, please email me at teekam.suthar1@gmail.com or create an issue on [github](https://github.com/teekamsuthar/Mutify/issues).
 
 _Please don't forget to leave your valuable reviews and suggestions. It helps me to improve this app further._
 
+### LICENSE
 
-
-### LICENSE 
 ```MIT License
 
 Copyright (c) 2020 Teekam Suthar
