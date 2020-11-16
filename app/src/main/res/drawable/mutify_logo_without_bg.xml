@@ -1,0 +1,51 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="330"
+    android:viewportHeight="330">
+    <group>
+        <group>
+            <path
+                android:pathData="M203.15 63.63c51.7 0 79.44 39.5 80.85 79.46c0 38.7-24.67 82.23-80.85 82.23"
+                android:strokeWidth="10"
+                android:strokeColor="#CC191414" />
+            <path
+                android:pathData="M203.15 86.54c34.47 0 55.66 28.63 56.6 57.26c0 27.73-19.14 58.62-56.6 58.62"
+                android:strokeWidth="10"
+                android:strokeColor="#B3191414" />
+            <path
+                android:pathData="M203.15 113.48c21.55 0 33.1 15.15 33.69 30.47c0 14.83-10.28 31.52-33.69 31.52"
+                android:strokeWidth="10"
+                android:strokeColor="#99191414" />
+        </group>
+        <path
+            android:fillColor="#CC191414"
+            android:pathData="M101 200.33l-11.03-22.05H72.33l3.67 7.35l16.9 14.7c2.76 1.04 4.65 0.75 8.1 0z" />
+        <group>
+            <path
+                android:fillColor="#1DB954"
+                android:pathData="M82.42 250.31l-60.54-72.03h60.54l21.46 72.03H82.42z" />
+        </group>
+        <group>
+            <path
+                android:fillColor="#178C41"
+                android:pathData="M31.79 190.04l51.83-11.75H21.88l9.9 11.75z" />
+        </group>
+        <group>
+            <path
+                android:fillColor="#1DB954"
+                android:pathData="M23.82 144.48L189.19 49v190.95L23.82 144.48z" />
+        </group>
+        <group>
+            <path
+                android:fillColor="#ED191414"
+                android:pathData="M15 118.67c0-4.42 3.58-8 8-8h59.62v67.61H23c-4.42 0-8-3.58-8-8v-51.61z" />
+        </group>
+        <group>
+            <path
+                android:pathData="M250.83 255.44L49.3 53.91"
+                android:strokeWidth="15"
+                android:strokeColor="#ED191414" />
+        </group>
+    </group>
+</vector>
