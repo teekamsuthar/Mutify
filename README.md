@@ -3,6 +3,8 @@
 
 A powerful, light-weight & permission-free Spotify Ad silencing app built using Java for Android.
 
+### Love this project? Buy me a [coffee](https://paypal.me/teekamsuthar) ☕
+
 <img alt="Mutify Banner" src="https://drive.google.com/uc?id=1lCmutBK5hDG9YG9H-qDdwJYE3wBG_Epr&export=download" align="center" height="360"></a>
 
 Whenever Mutify detects Spotify is playing an ad, it turns down the music volume to zero, so that you can sit back and enjoy listening to your favorite music without worrying about those annoyingly loud Spotify ads.
