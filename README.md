@@ -3,7 +3,7 @@
 
 A powerful, light-weight & permission-free Spotify Ad silencing app built using Java for Android.
 
-### Love this project? Buy me a [coffee].(https://paypal.me/teekamsuthar) ☕
+### Love this project? Buy me a [coffee.](https://paypal.me/teekamsuthar) ☕
 
 <img alt="Mutify Banner" src="https://drive.google.com/uc?id=1lCmutBK5hDG9YG9H-qDdwJYE3wBG_Epr&export=download" align="center" height="360"></a>
 
