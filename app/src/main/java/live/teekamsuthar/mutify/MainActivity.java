@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
                 song.getArtist(), song.getAlbum()));
         lastUpdated.setText(String.format("(info updated @%s)", getTimeStampFromDate(song.getTimeSent())));
         // log new song
-        i("New Song", song.getTrack());
+        Log.i("New Song", song.getTrack());
     }
 
     @Override
@@ -780,6 +780,9 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
             case "asus":
                 intent = new Intent().setComponent(new ComponentName("com.asus.mobilemanager", "com.asus.mobilemanager.entry.FunctionActivity")).setData(
                         Uri.parse("mobilemanager://function/entry/AutoStart"));
+                break;
+            case "samsung":
+                intent = new Intent().setComponent(new ComponentName("com.samsung.android.lool", "com.samsung.android.sm.ui.battery.BatteryActivity"));
                 break;
             default:
                 intent = null;
