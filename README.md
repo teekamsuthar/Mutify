@@ -3,33 +3,38 @@
 
 A powerful, light-weight & permission-free Spotify Ad silencing app built using Java for Android.
 
-### Love this project? Buy me a [coffee.](https://paypal.me/teekamsuthar) ☕
+### 💖Love this app? Buy me a [Coffee.](https://paypal.me/teekamsuthar) ☕ 
+
+
+[<img alt="Buy me a Coffee Button" width=200 src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png">](https://www.buymeacoffee.com/teekamsuthar)
+&nbsp; [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/teekamsuthar)
+</br>
 
 <img alt="Mutify Banner" src="https://drive.google.com/uc?id=1lCmutBK5hDG9YG9H-qDdwJYE3wBG_Epr&export=download" align="center" height="360"></a>
 
-Whenever Mutify detects Spotify is playing an ad, it turns down the music volume to zero, so that you can sit back and enjoy listening to your favorite music without worrying about those annoyingly loud Spotify ads.
+Whenever Mutify detects an ad is playing on Spotify, it helps you turn down the volume of the ads automatically, so that you can sit back and enjoy listening to your favorite music without worrying about those annoyingly loud ads.
 
-## Instructions </br>
+## 📑Instructions </br>
 
-- You MUST enable 'Device Broadcast Status' in Spotify settings for Mutify to work.
-- Please add Mutify to battery saving exceptions list to make sure it works un-interruptedly in the background!
+- **You MUST enable 'Device Broadcast Status' in Spotify settings for Mutify to work.**
+- Please add Mutify to battery saving exceptions list to make sure it works uninterruptedly in the background (optional) 
 
-## Features </br>
+## ✅Features </br>
 
 - Simple and Clean User interface
 - Option to enable Dark-Only mode
 - Manual mute/unmute buttons
 - Controls media without leaving the app
 
-### Disclaimer
+### ℹ Disclaimer
 
 Mutify does NOT block ads, it just mutes the device's music volume whenever an ad is detected playing. So it does not interfere with your Spotify app or asks for any unnecessary permissions to work.
 
-- **_Spotify Lite is NOT supported yet!_**
+- **_Spotify Lite is NOT supported!_**
 
-If you love Mutify, feel free to fork the repo and contribute on [github](https://github.com/teekamsuthar/Mutify). (or [sponsor](https://patreon.com/teekamsuthar) this project if you feel like being generous ;)
+If you love Mutify, feel free to fork the repo and contribute on [github](https://github.com/teekamsuthar/Mutify). (or [sponsor](https://paypal.me/teekamsuthar) this project if you feel like being generous ;)
 
-### Download it on [Play Store](https://play.google.com/store/apps/details?id=live.teekamsuthar.mutify)
+### ⬇ Download it on [Play Store](https://play.google.com/store/apps/details?id=live.teekamsuthar.mutify)
 
 <!-- [![Get it on Google Play](https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png)](https://play.google.com/store/apps/details?id=live.teekamsuthar.mutify) -->
 
@@ -40,7 +45,7 @@ If there is an issue or feature request, please email me at teekam.suthar1@gmail
 
 _Please don't forget to leave your valuable reviews and suggestions. It helps me to improve this app further._
 
-### LICENSE
+### 📜LICENSE
 
 ```MIT License
 
