@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mutify</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="open_spotify">Offen Spotify</string>
+    <string name="mute_ads">Anzeigen stummschalten</string>
+    <string name="mute">Stumm</string>
+    <string name="unmute">Stummschaltung aufheben</string>
+    <string name="titleText">Tipps</string>
+    <string name="toggle_tips">Tipps ausblenden</string>
+    <string name="warningText">-> Lassen Sie Mutify im Hintergrund laufen und deaktivieren Sie alle Batterieeinschränkungsfunktionen, damit Mutify ordnungsgemäß funktioniert.</string>
+    <string name="warningText0">-> Wenn beim Stummschalten/Aufheben der Stummschaltung eine Verzögerung auftritt, versuchen Sie, die Überblendung zwischen den Songs in den Spotify-Einstellungen zu deaktivieren.</string>
+    <string name="warningText1">-> Anzeigen, die abgespielt werden, nachdem Sie einen Titel manuell übersprungen haben, können nicht stummgeschaltet werden. In diesem Fall können Sie die Stummschaltung/Stummschaltung manuell aufheben.</string>
+    <string name="warningText2">-> Bitte kontaktieren Sie uns, wenn Sie andere Probleme haben.</string>
+    <string name="warning_toast_message">Bitte erwägen Sie, eine Bewertung im Play Store zu hinterlassen, wenn Sie diese App unterstützen möchten;)</string>
+    <string name="next">nächste</string>
+    <string name="play">abspielen</string>
+    <string name="previous">früher</string>
+    <string name="rate_app_in_play_store">App im Play Store bewerten</string>
+    <string name="play_state_text">Spielt gerade</string>
+    <string name="last_detected_song">Letztes erkanntes Lied</string>
+    <string name="mute_timer_cancelled">Stummschalttimer abgebrochen</string>
+    <string name="device_muted">Gerät wurde stummgeschaltet</string>
+    <string name="dialog_title">Geräte-Broadcast-Status aktivieren</string>
+    <string name="dialog_message">Bitte aktivieren Sie \\n\\\'Geräteübertragungsstatus\\\'\\n in den Spotify-Einstellungen, damit Mutify funktioniert. \\nMutify funktioniert ohne es nicht.</string>
+    <string name="contact_us">Kontaktiere uns</string>
+    <string name="dialog_negative_btn">Ich habe es aktiviert</string>
+    <string name="auto_launch_spotify">Spotify automatisch starten</string>
+    <string name="music_image">Musik Bild</string>
+    <string name="pause">pause</string>
+    <string name="enable_dark_mode" translatable="false">Nur dunkler Modus</string>
+    <string name="dialog_positive_btn">Offen Spotify</string>
+</resources>
