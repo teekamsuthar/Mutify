@@ -24,7 +24,6 @@
     <string name="device_muted">Device was Muted</string>
     <string name="dialog_title">Enable Device Broadcast Status</string>
     <string name="dialog_message">Please enable \n\'Device Broadcast Status\'\n in Spotify settings for Mutify to work. \nMutify won\'t work without it.</string>
-    <string name="dialog_positive_btn">Open Spotify</string>
     <string name="dialog_negative_btn">I have enabled it</string>
     <string name="contact_us">Contact Us</string>
     <string name="auto_launch_spotify">Auto-launch Spotify</string>

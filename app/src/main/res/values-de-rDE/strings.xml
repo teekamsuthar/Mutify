@@ -29,5 +29,4 @@
     <string name="music_image">Musik Bild</string>
     <string name="pause">pause</string>
     <string name="enable_dark_mode" translatable="false">Nur dunkler Modus</string>
-    <string name="dialog_positive_btn">Offen Spotify</string>
 </resources>
