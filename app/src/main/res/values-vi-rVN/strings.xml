@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mutify</string>
+    <string name="music_image">Hình ảnh âm nhạc</string>
+    <string name="action_settings">Cài đặt</string>
+    <string name="open_spotify">Mở Spotify</string>
+    <string name="mute_ads">Tắt tiếng Quảng cáo</string>
+    <string name="mute">Mute</string>
+    <string name="unmute">Bật tiếng</string>
+    <string name="titleText">Lời khuyên</string>
+    <string name="toggle_tips">Ẩn Mẹo</string>
+    <string name="warningText">-> Cho phép Mutify chạy nền và tắt mọi tính năng hạn chế pin để Mutify hoạt động bình thường.</string>
+    <string name="warningText0">-> Nếu bạn gặp bất kỳ sự chậm trễ nào trong việc tắt tiếng / bật tiếng, hãy thử tắt chế độ làm mờ chéo giữa các bài hát từ cài đặt Spotify.</string>
+    <string name="warningText1">-> Không thể tắt tiếng các quảng cáo phát sau khi bạn bỏ qua một bản nhạc theo cách thủ công. Bạn có thể nhấn tắt tiếng / bật tiếng theo cách thủ công trong trường hợp đó.</string>
+    <string name="warningText2">-> Vui lòng liên hệ với chúng tôi, nếu bạn gặp bất kỳ vấn đề nào khác.</string>
+    <string name="warning_toast_message">Vui lòng xem xét để lại đánh giá trên Cửa hàng Play nếu bạn muốn hỗ trợ ứng dụng này;)</string>
+    <string name="next">Kế tiếp</string>
+    <string name="pause">tạm ngừng</string>
+    <string name="play">chơi</string>
+    <string name="previous">Trước</string>
+    <string name="enable_dark_mode" translatable="false">Chế độ chỉ tối</string>
+    <string name="rate_app_in_play_store">Xếp hạng ứng dụng trong Cửa hàng Play</string>
+    <string name="play_state_text">Hiện đang chơi</string>
+    <string name="last_detected_song">Bài hát được phát hiện lần cuối</string>
+    <string name="mute_timer_cancelled">Đã hủy hẹn giờ tắt tiếng</string>
+    <string name="device_muted">Thiết bị đã bị tắt tiếng</string>
+    <string name="dialog_title">Bật trạng thái phát sóng trên thiết bị</string>
+    <string name="dialog_message">Vui lòng bật \ n \ \'Trạng thái phát sóng trên thiết bị \' \ n trong cài đặt Spotify để Mutify hoạt động. \ nMutify sẽ không hoạt động nếu không có nó.</string>
+    <string name="dialog_negative_btn">Tôi đã kích hoạt nó</string>
+    <string name="contact_us">Liên hệ chúng tôi</string>
+    <string name="auto_launch_spotify">Tự động khởi chạy Spotify</string>
+    <string name="dialog_positive_btn">Mở Spotify</string>
+</resources>
