@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mutify</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="open_spotify">Abierto Spotify</string>
+    <string name="mute_ads">Silenciar anuncios</string>
+    <string name="mute">Mudo</string>
+    <string name="unmute">Activar sonido</string>
+    <string name="titleText">Consejos</string>
+    <string name="toggle_tips">Ocultar consejos</string>
+    <string name="warningText">-> Permita que Mutify se ejecute en segundo plano y desactive las funciones de restricción de batería para que Mutify funcione correctamente.</string>
+    <string name="warningText0">-> Si encuentra algún retraso al silenciar / reactivar, intente deshabilitar el fundido cruzado entre canciones desde la configuración de Spotify.</string>
+    <string name="warningText1">-> Los anuncios que se reproducen después de omitir manualmente una pista no se pueden silenciar. En ese caso, puede presionar silenciar / reactivar manualmente.</string>
+    <string name="next">Siguiente</string>
+    <string name="warningText2">-> Póngase en contacto con nosotros si tiene algún otro problema.</string>
+    <string name="warning_toast_message">Considere dejar una reseña en Play Store si desea admitir esta aplicación;)</string>
+    <string name="pause">pausa</string>
+    <string name="play">juego</string>
+    <string name="previous">Previo</string>
+    <string name="enable_dark_mode">Modo solo oscuro</string>
+    <string name="rate_app_in_play_store">Calificar la aplicación en Play Store</string>
+    <string name="play_state_text">Reproduciendo</string>
+    <string name="last_detected_song">Última canción detectada</string>
+    <string name="mute_timer_cancelled">Temporizador de silencio cancelado</string>
+    <string name="device_muted">El dispositivo fue silenciado</string>
+    <string name="dialog_title">Habilitar estado de transmisión del dispositivo</string>
+    <string name="dialog_message">Habilite \ n \ \'Estado de transmisión del dispositivo \' \ n en la configuración de Spotify para que Mutify funcione. \nMutify no funcionará sin él</string>
+    <string name="dialog_negative_btn">Lo he habilitado</string>
+    <string name="contact_us">Contacta con nosotros</string>
+    <string name="auto_launch_spotify">Lanzamiento automático de Spotify</string>
+    <string name="music_image">Imagen musical</string>
+    <string name="dialog_positive_btn">Abierto Spotify</string>
+</resources>
