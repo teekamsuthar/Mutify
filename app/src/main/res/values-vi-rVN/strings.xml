@@ -29,4 +29,5 @@
     <string name="dialog_negative_btn">Tôi đã kích hoạt nó</string>
     <string name="contact_us">Liên hệ chúng tôi</string>
     <string name="auto_launch_spotify">Tự động khởi chạy Spotify</string>
+    <string name="dialog_positive_btn">Mở Spotify</string>
 </resources>

@@ -581,7 +581,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         builder.setView(messageView);
         builder.setCancelable(false);
         // Do nothing inside click listeners because we override this button later to change the close behaviour.
-        builder.setPositiveButton(R.string.open_spotify, (dialog, which) -> {
+        builder.setPositiveButton(R.string.dialog_positive_btn, (dialog, which) -> {
         });
         builder.setNegativeButton(R.string.dialog_negative_btn, (dialog, which) -> {
         });
