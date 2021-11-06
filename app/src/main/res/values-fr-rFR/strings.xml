@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mutify</string>
+    <string name="action_settings">Settings</string>
+    <string name="open_spotify">Ouvrez Spotify</string>
+    <string name="mute_ads">Ignorer les annonces</string>
+    <string name="mute">Muet</string>
+    <string name="unmute">Rétablir le son</string>
+    <string name="titleText">Des astuces</string>
+    <string name="toggle_tips">Masquer les astuces</string>
+    <string name="warningText">-> Autorisez Mutify à s\'exécuter en arrière-plan et désactivez toutes les fonctionnalités de restriction de la batterie pour que Mutify fonctionne correctement.</string>
+    <string name="warningText0">-> Si vous rencontrez un retard dans la mise en sourdine/rétablissement du son, essayez de désactiver le fondu enchaîné entre les chansons à partir des paramètres Spotify.</string>
+    <string name="warningText1">-> Les annonces diffusées après que vous ayez sauté manuellement une piste ne peuvent pas être mises en sourdine. Vous pouvez appuyer manuellement sur mute/unmute dans ce cas.</string>
+    <string name="warningText2">-> Veuillez nous contacter si vous rencontrez d\'autres problèmes.</string>
+    <string name="warning_toast_message">Veuillez envisager de laisser un avis sur le Play Store si vous souhaitez soutenir cette application ;)</string>
+    <string name="next">suivant</string>
+    <string name="pause">pause</string>
+    <string name="play">jouer</string>
+    <string name="previous">précédent</string>
+    <string name="enable_dark_mode" translatable="false">Mode sombre uniquement</string>
+    <string name="rate_app_in_play_store">Évaluer l\'application dans le Play Store</string>
+    <string name="play_state_text">Joue actuellement</string>
+    <string name="last_detected_song">Dernière chanson détectée</string>
+    <string name="mute_timer_cancelled">Minuterie de sourdine annulée</string>
+    <string name="device_muted">L\'appareil a été mis en sourdine</string>
+    <string name="dialog_title">Activer l\'état de diffusion de l\'appareil</string>
+    <string name="dialog_message">Veuillez activer \\n\\\'Device Broadcast Status\\\'\\n dans les paramètres Spotify pour que Mutify fonctionne. \\nMutify ne fonctionnera pas sans lui</string>
+    <string name="dialog_negative_btn">je l\'ai activé</string>
+    <string name="contact_us">Nous contacter</string>
+    <string name="auto_launch_spotify">Lancer automatiquement Spotify</string>
+    <string name="music_image">Image musicale</string>
+    <string name="dialog_positive_btn">Ouvrez Spotify</string>
+</resources>
