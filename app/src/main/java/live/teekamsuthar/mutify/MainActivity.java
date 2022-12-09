@@ -2,7 +2,10 @@ package live.teekamsuthar.mutify;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
@@ -57,6 +60,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static android.util.Log.i;
 import static com.google.android.play.core.install.model.ActivityResult.RESULT_IN_APP_UPDATE_FAILED;
 import static com.google.android.play.core.install.model.AppUpdateType.FLEXIBLE;
 import static live.teekamsuthar.mutify.StopServiceBroadcastReceiver.shouldCloseService;
@@ -90,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // init notification service intent
@@ -199,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
             }
         };
         scheduledMute = scheduledMuteExecutorService.schedule(muteTask, waitTime, TimeUnit.MILLISECONDS);
-        Log.i("Muting in:", getTimeStamp(waitTime));
+        i("Muting in:", getTimeStamp(waitTime));
     }
 
     private void setUnmuteTimer() {
@@ -218,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
                 }
             };
             scheduledUnMute = scheduledUnMuteExecutorService.schedule(unmuteTask, 800, TimeUnit.MILLISECONDS);
-            Log.i("UNMUTE in:", getTimeStamp(800));
+            i("UNMUTE in:", getTimeStamp(800));
         }
     }
 
@@ -231,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
             } else {
                 audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
             }
-            Log.i("MUTED!", "device is muted");
+            i("MUTED!", "device is muted");
             updateMuteIndicator();
         }
     }
@@ -242,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         } else {
             audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
         }
-        Log.i("UN-MUTED", "volume restored.");
+        i("UN-MUTED", "volume restored.");
         updateMuteIndicator();
         //  songCardView.setCardBackgroundColor(getResources().getColor(R.color.cardBackgroundNegative));
     }
@@ -603,6 +608,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         negative.setOnClickListener(v -> {
             Utils.setBooleanPreferenceValue(this, "isFirstTimeLaunch", false); // set boolean then dismiss
             dialog.dismiss();
+            isChineseBrand();
         });
     }
 
@@ -660,13 +666,13 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                     && appUpdateInfo.isUpdateTypeAllowed(FLEXIBLE)) {
                 requestUpdate(appUpdateInfo);
-                Log.i(IN_APP_UPDATE, "Update is Available");
+                i(IN_APP_UPDATE, "Update is Available");
             } else if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_NOT_AVAILABLE) {
-                Log.i(IN_APP_UPDATE, "Update isn't Available");
+                i(IN_APP_UPDATE, "Update isn't Available");
             } else {
-                Log.i(IN_APP_UPDATE, "Something went wrong!");
+                i(IN_APP_UPDATE, "Something went wrong!");
             }
-            Log.i(IN_APP_UPDATE, "packageName: " + appUpdateInfo.packageName()
+            i(IN_APP_UPDATE, "packageName: " + appUpdateInfo.packageName()
                     + "|" + "availableVersionCode: " + appUpdateInfo.availableVersionCode()
                     + "|" + "updateAvailability: " + appUpdateInfo.updateAvailability()
                     + "|" + "installStatus: " + appUpdateInfo.installStatus());
@@ -742,5 +748,63 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
                     break;
             }
         }
+    }
+
+    /* check if the device is chinese brand
+        if yes, then show up a dialog which will navigate user to the auto start settings in his phone
+        where he/she can mark this app to run in the background (because chinese brand device don't let apps
+        to run foreground notification in the background until user manually give permission for it)
+     */
+    private void isChineseBrand(){
+        String device = Build.MANUFACTURER.toLowerCase();
+        Intent intent;
+        switch (device){
+            case "xiaomi":
+                intent =  new Intent().setComponent(new ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity"));
+                break;
+            case "miui":
+                intent =  new Intent().setComponent(new ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity"));
+                break;
+            case "huawei":
+                intent = new Intent().setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.optimize.process.ProtectActivity"));
+                break;
+            case "oppo":
+                intent = new Intent().setComponent(new ComponentName("com.oppo.safe", "com.oppo.safe.permission.startup.StartupAppListActivity"));
+                break;
+            case "vivo":
+                intent = new Intent().setComponent(new ComponentName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity"));
+                break;
+            case "oneplus":
+                intent = new Intent().setComponent(new ComponentName("com.oneplus.security", "com.oneplus.security.chainlaunch.view.ChainLaunchAppListActivity"));
+                break;
+            case "asus":
+                intent = new Intent().setComponent(new ComponentName("com.asus.mobilemanager", "com.asus.mobilemanager.entry.FunctionActivity")).setData(
+                        Uri.parse("mobilemanager://function/entry/AutoStart"));
+                break;
+            case "samsung":
+                intent = new Intent().setComponent(new ComponentName("com.samsung.android.lool", "com.samsung.android.sm.ui.battery.BatteryActivity"));
+                break;
+            default:
+                intent = null;
+        }
+
+        if(intent != null) showAutoStartPermissionDialog(intent);
+    }
+
+    private void showAutoStartPermissionDialog(Intent intent){
+        new AlertDialog.Builder(this)
+                .setMessage("Give this app the auto start permission in order to work in the background")
+                .setCancelable(false)
+                .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        try{
+                            startActivity(intent);
+                        }catch(Exception e){
+                            Log.e("MainActivity" , e.toString());
+                        }
+                    }
+                })
+                .show();
     }
 }
