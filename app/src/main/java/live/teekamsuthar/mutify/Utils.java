@@ -50,6 +50,10 @@ public class Utils {
         return formatter.format(date);
     }
 
+    public static SharedPreferences getPrefs(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
     public static void setBooleanPreferenceValue(Context context, String key, boolean value) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         sp.edit().putBoolean(key, value).apply();

@@ -1,13 +1,13 @@
 package live.teekamsuthar.mutify;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
-import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -36,6 +37,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -47,18 +49,11 @@ import com.google.android.play.core.install.InstallStateUpdatedListener;
 import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.InstallStatus;
 import com.google.android.play.core.install.model.UpdateAvailability;
-import com.google.android.play.core.tasks.Task;
+import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static android.util.Log.i;
 import static com.google.android.play.core.install.model.ActivityResult.RESULT_IN_APP_UPDATE_FAILED;
@@ -78,16 +73,14 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
     private Intent notificationService;
     private static SwitchMaterial adSwitch;
     private CardView tipsCardView;
-    private SpotifyBroadcastReceiver spotifyBroadcastReceiver;
+    private SpotifySessionWatcher spotifySessionWatcher;
     private AudioManager audioManager;
     private TextView songInfoTextView, track, isPlaying, lastUpdated;
-    private int playbackPosition;
-    private ScheduledFuture<?> scheduledMute, scheduledUnMute;
     private ImageView surpriseImageView;
     private AppUpdateManager appUpdateManager;
     private static final int MY_REQUEST_CODE = 17326;
+    private static final int POST_NOTIFICATIONS_REQUEST_CODE = 17327;
     private static final String IN_APP_UPDATE = "InAppUpdateInfo";
-    ScheduledExecutorService scheduledMuteExecutorService, scheduledUnMuteExecutorService;
     SharedPreferences prefs;
 
     @Override
@@ -117,8 +110,8 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         mediaButtons.setVisibility(View.GONE);
         // init audio manager
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        // init the broadcast listener with callback
-        spotifyBroadcastReceiver = new SpotifyBroadcastReceiver(this);
+        // follows Spotify's media session to show the current track
+        spotifySessionWatcher = new SpotifySessionWatcher(this, this);
         // init shared prefs
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         // check if Device currently muted or not
@@ -142,88 +135,12 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
 
     @Override
     public void playbackStateChanged(boolean playState, int playbackPos, Song song) {
-        playbackPosition = playbackPos;
+        // display only: SpotifyAdListenerService does the muting, also while this activity is gone
         updatePlayPauseButton(playState);
         if (playState) {
             isPlaying.setText(R.string.play_state_text);
         } else {
             isPlaying.setText(R.string.last_detected_song);
-        }
-        handleNewSongIntent(playState, song);
-    }
-
-    // triggered whenever playback state changes
-    private void handleNewSongIntent(boolean playState, Song song) {
-        // if existing mute timer, cancel it!
-        cancelMuteTimer("handle new song: ");
-        // handling timers according to playback state!
-        if (playState) {
-            // calculate delay
-            long delay = calculateTime(song);
-            setMuteTimer(delay);
-            // set a new 800ms unmute timer in case delay is positive and song starts playing!
-            if (delay > 0) {
-                setUnmuteTimer();
-            }
-        } else {
-            cancelMuteTimer("song PAUSED: ");
-            Log.v("Paused", "cancelling mute timer...");
-        }
-    }
-
-    private long calculateTime(Song songFromIntent) {
-        return songFromIntent.timeRemaining(playbackPosition) - songFromIntent.getElapsedTime();
-    }
-
-    private void cancelMuteTimer(String cause) {
-        if (scheduledMute != null && !scheduledMute.isCancelled()) {
-            if (scheduledMute.cancel(false)) {
-                Log.v(cause, "Mute timer cancelled...");
-            } else {
-                Log.w(cause, "Mute timer couldn't be cancelled...");
-            }
-        } else {
-            Log.d(cause, "No timer is set");
-        }
-    }
-
-    private void setMuteTimer(final long waitTime) {
-        // Create the scheduler & spawn a new thread pool with each timer.
-        scheduledMuteExecutorService = Executors.newScheduledThreadPool(1);
-        // Create the task to execute
-        final Runnable muteTask = () -> {
-            try {
-                mute();
-                // to avoid app freeze because of exception in thread https://stackoverflow.com/a/48181646/11141100
-                if (scheduledMute.isDone()) {
-                    scheduledMute.get(5, TimeUnit.SECONDS);
-                }
-            } catch (InterruptedException | CancellationException | ExecutionException | TimeoutException e) { // handle exceptions
-                Throwable cause = e.getCause();
-                Log.e("Exception", "Scheduled execution was interrupted/cancelled (muteTask):", cause);
-            }
-        };
-        scheduledMute = scheduledMuteExecutorService.schedule(muteTask, waitTime, TimeUnit.MILLISECONDS);
-        i("Muting in:", getTimeStamp(waitTime));
-    }
-
-    private void setUnmuteTimer() {
-        if (isDeviceMuted()) {
-            scheduledUnMuteExecutorService = Executors.newScheduledThreadPool(1);
-            // Create the task to execute
-            final Runnable unmuteTask = () -> {
-                try {
-                    unmute();
-                    if (scheduledUnMute.isDone()) {
-                        scheduledUnMute.get(5, TimeUnit.SECONDS);
-                    }
-                } catch (InterruptedException | CancellationException | ExecutionException | TimeoutException e) { // handle exceptions
-                    Throwable cause = e.getCause();
-                    Log.e("Exception", "Scheduled execution was interrupted/cancelled (Un-muteTask):", cause);
-                }
-            };
-            scheduledUnMute = scheduledUnMuteExecutorService.schedule(unmuteTask, 800, TimeUnit.MILLISECONDS);
-            i("UNMUTE in:", getTimeStamp(800));
         }
     }
 
@@ -255,7 +172,12 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
     public void checkSwitch(boolean isChecked) {
         if (isChecked) {
             // make sure spotify is installed before starting the service
-            if (isSpotifyInstalled()) {
+            if (!SpotifyAdListenerService.hasNotificationAccess(this)) {
+                // without notification access Mutify cannot see what Spotify plays
+                adSwitch.setChecked(false);
+                showNotificationAccessDialog();
+                return;
+            } else if (isSpotifyInstalled()) {
                 startService();
             } else {
                 // if not installed, flick the switch back to off
@@ -273,37 +195,26 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
     }
 
     private void startService() {
+        // Android 13+: the "Mutify is running" notification needs the notification permission
+        // (the muting itself works without it)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, POST_NOTIFICATIONS_REQUEST_CODE);
+        }
         // create notification for Android above O
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(notificationService);
         } else {
             startService(notificationService);
         }
-        // intent filters for broadcast receiver
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(SpotifyBroadcastReceiver.BroadcastTypes.PLAYBACK_STATE_CHANGED);
-        filter.addAction(SpotifyBroadcastReceiver.BroadcastTypes.METADATA_CHANGED);
-        // register Spotify broadcast listener.
-        registerReceiver(spotifyBroadcastReceiver, filter);
+        SpotifyAdListenerService.setMutingEnabled(this, true);
+        spotifySessionWatcher.start();
     }
 
     private void stopService() {
-        try {
-            unregisterReceiver(spotifyBroadcastReceiver);
-            // Time is up. Kill the executor service and its thread pool.
-//            if (scheduledUnMuteExecutorService != null && scheduledMuteExecutorService != null) {
-//                scheduledMuteExecutorService.shutdown();
-//                scheduledUnMuteExecutorService.shutdown();
-//                Log.i("Stop Service", "Executor service is shutdown");
-//            } else {
-//                Log.d("Stop Service", "null");
-//            }
-        } catch (Exception e) {
-            // WTF!??
-            Log.wtf("error while stopping", e.getMessage());
-        }
-        stopService(notificationService); // stop logging service
-        cancelMuteTimer("Service Stopped");
+        SpotifyAdListenerService.setMutingEnabled(this, false);
+        spotifySessionWatcher.stop();
+        stopService(notificationService); // stop foreground notification
         // clear text-views
         songInfoTextView.setText("");
         isPlaying.setText("");
@@ -404,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
     }
 
     public static void closeSwitch() {
-        adSwitch.setChecked(false);
+        if (adSwitch != null) adSwitch.setChecked(false);
         shouldCloseService = false;
     }
 
@@ -563,9 +474,24 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         }
     }
 
-    // show a dialog to enable device broadcast status from spotify.
+    // first launch: explain and ask for notification access, then the auto-start hint
     private void showAlertDialog() {
-        // defining custom text views
+        showNotificationAccessDialog(() -> {
+            Utils.setBooleanPreferenceValue(this, "isFirstTimeLaunch", false);
+            isChineseBrand();
+        });
+    }
+
+    private void showNotificationAccessDialog() {
+        showNotificationAccessDialog(null);
+    }
+
+    // Mutify reads Spotify's media session, which Android only allows with notification access.
+    private void showNotificationAccessDialog(@Nullable Runnable onDismiss) {
+        if (SpotifyAdListenerService.hasNotificationAccess(this)) {
+            if (onDismiss != null) onDismiss.run();
+            return;
+        }
         TextView titleView = new TextView(this);
         titleView.setText(getString(R.string.dialog_title));
         titleView.setTextSize(20.0f);
@@ -575,41 +501,23 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         messageView.setText(getString(R.string.dialog_message));
         messageView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         messageView.setTextSize(16.0f);
-        // setting views to dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCustomTitle(titleView);
-        builder.setView(messageView);
-        builder.setCancelable(false);
-        // Do nothing inside click listeners because we override this button later to change the close behaviour.
-        builder.setPositiveButton(R.string.dialog_positive_btn, (dialog, which) -> {
-        });
-        builder.setNegativeButton(R.string.dialog_negative_btn, (dialog, which) -> {
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-        // Overriding the handler immediately after show (to prevent dialog closing after clicking the button).
-        Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-        positive.setOnClickListener(v -> {
-            if (isSpotifyInstalled()) {
-                // open Spotify settings on api above v24.
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    Intent spotifySettings = new Intent("android.intent.action.APPLICATION_PREFERENCES").setPackage(SPOTIFY_PACKAGE);
-                    startActivity(spotifySettings);
-                    Toast.makeText(this, "Scroll down and Enable Device Broadcast Status…", Toast.LENGTH_LONG).show();
-                } else {
-                    openSpotify();
-                    Toast.makeText(this, "Enable Device Broadcast Status from Spotify settings…", Toast.LENGTH_LONG).show();
-                }
-            } else {
-                Toast.makeText(this, "Couldn't find Spotify installed!", Toast.LENGTH_SHORT).show();
-            }
-        });
-        negative.setOnClickListener(v -> {
-            Utils.setBooleanPreferenceValue(this, "isFirstTimeLaunch", false); // set boolean then dismiss
-            dialog.dismiss();
-            isChineseBrand();
-        });
+        messageView.setPadding(30, 0, 30, 0);
+        new AlertDialog.Builder(this)
+                .setCustomTitle(titleView)
+                .setView(messageView)
+                .setCancelable(false)
+                .setPositiveButton(R.string.dialog_positive_btn, (dialog, which) -> {
+                    try {
+                        startActivity(new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS));
+                    } catch (ActivityNotFoundException e) {
+                        Toast.makeText(this, "Open Settings > Notifications > Notification access and allow Mutify", Toast.LENGTH_LONG).show();
+                    }
+                    if (onDismiss != null) onDismiss.run();
+                })
+                .setNegativeButton(R.string.dialog_negative_btn, (dialog, which) -> {
+                    if (onDismiss != null) onDismiss.run();
+                })
+                .show();
     }
 
     // returns true if Spotify installed on device
@@ -714,6 +622,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         super.onDestroy();
         // unregister listener for In app update
         appUpdateManager.unregisterListener(listener);
+        spotifySessionWatcher.stop();
     }
 
     private void notifyUserToUpdate() {

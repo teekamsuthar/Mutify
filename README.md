@@ -1,7 +1,7 @@
 
 # <img alt="Logo" src="https://drive.google.com/u/1/uc?id=1Y5WXSdqaS4bruYLRibYg_N5GEQbkXYBf&export=download" align="center" height="60"></a>Mutify - mute annoying ads 
 
-A powerful, light-weight & permission-free Spotify Ad silencing app built using Java for Android.
+A powerful, light-weight Spotify Ad silencing app built using Java for Android.
 
 ### 💖Love this app? Buy me a [Coffee.](https://paypal.me/teekamsuthar) ☕ 
 
@@ -16,7 +16,11 @@ Whenever Mutify detects an ad is playing on Spotify, it helps you turn down the 
 
 ## 📑Instructions </br>
 
-- **You MUST enable 'Device Broadcast Status' in Spotify settings for Mutify to work.**
+- **You MUST allow 'Notification access' for Mutify** (Settings > Notifications > Notification access, or the dialog on first start).
+  Mutify reads the media info Spotify publishes for its notification and lock screen to recognise ads.
+  Spotify's 'Device Broadcast Status' setting is no longer needed — newer Spotify versions removed it.
+- On Android 13+, an APK installed outside the Play Store may show the notification-access switch greyed out as a
+  "restricted setting": open App info > Mutify > ⋮ > *Allow restricted settings*, then grant access.
 - Please add Mutify to battery saving exceptions list to make sure it works uninterruptedly in the background (optional) 
 
 ## ✅Features </br>
@@ -28,7 +32,7 @@ Whenever Mutify detects an ad is playing on Spotify, it helps you turn down the 
 
 ### ℹ Disclaimer
 
-Mutify does NOT block ads, it just mutes the device's music volume whenever an ad is detected playing. So it does not interfere with your Spotify app or asks for any unnecessary permissions to work.
+Mutify does NOT block ads, it just mutes the device's music volume whenever an ad is detected playing. So it does not interfere with your Spotify app. Its only permission is notification access, used solely to read what Spotify is playing.
 
 - **_Spotify Lite is NOT supported!_**
 

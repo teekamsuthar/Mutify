@@ -15,7 +15,10 @@ public class StopServiceBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getStringExtra("Action");
-        if (action.equals(ACTION_STOP)) {
+        if (ACTION_STOP.equals(action)) {
+            // stop muting even when MainActivity is gone; the listener service keeps running
+            SpotifyAdListenerService.setMutingEnabled(context, false);
+            context.stopService(new Intent(context, NotificationService.class));
             closeSwitch();
             shouldCloseService = true;
         }

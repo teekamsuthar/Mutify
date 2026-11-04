@@ -24,7 +24,7 @@ public class NotificationService extends Service {
         // action to be added in the notification
         Intent intent = new Intent(this, StopServiceBroadcastReceiver.class);
         intent.putExtra("Action", ACTION_STOP);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | immutableFlag());
         NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_baseline_close_24, "Stop", pendingIntent).build();
 
         // create notification channel for devices above api 26/Oreo
@@ -65,7 +65,12 @@ public class NotificationService extends Service {
         notificationIntent.setAction(Intent.ACTION_MAIN);
         notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        return PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | immutableFlag());
+    }
+
+    // required from Android 12 (targetSdk 31+); the flag exists since Android 6
+    private static int immutableFlag() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_IMMUTABLE : 0;
     }
 
     @Nullable
