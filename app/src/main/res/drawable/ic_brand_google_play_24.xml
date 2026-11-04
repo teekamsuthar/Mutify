@@ -1,0 +1,18 @@
+<!-- Outline of the Google Play mark, as on 2.6.2's About screen ("Rate on Play Store"). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="?attr/colorControlNormal">
+    <path
+        android:pathData="M4.5,3.2L4.5,20.8L20,12Z"
+        android:strokeWidth="1.6"
+        android:strokeColor="@android:color/white"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M4.5,3.2L15.2,15M4.5,20.8L15.2,9"
+        android:strokeWidth="1.6"
+        android:strokeColor="@android:color/white"
+        android:strokeLineCap="round" />
+</vector>

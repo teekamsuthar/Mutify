@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spanish (neutral, "tú"). Translator notes live in values/strings.xml. -->
+<resources>
+    <string name="status_ad_muted">Anuncio mudo</string>
+    <string name="status_setup_needed">Configurar</string>
+
+    <string name="main_state_setup_needed">Mutify necesita acceso a las notificaciones para ver lo que reproduce Spotify. Toca aquí para configurarlo.</string>
+    <string name="main_state_off">Mutify está desactivado. Actívalo para silenciar los anuncios de Spotify.</string>
+    <string name="main_state_waiting">Mutify está activado. Reproduce algo en Spotify para verlo aquí.</string>
+    <string name="mute_indicator_ad_muted">Anuncio silenciado ahora</string>
+    <string name="mute_indicator_ad_quieter">Anuncio sonando más bajo ahora</string>
+    <string name="mute_indicator_device_muted">El volumen multimedia está silenciado</string>
+
+    <string name="play_state_text">Reproduciendo ahora</string>
+    <string name="last_detected_song">Última canción detectada</string>
+    <string name="now_playing_artist_album">De %1$s\nÁlbum: %2$s</string>
+    <string name="now_playing_updated">(info actualizada a las %1$s)</string>
+    <string name="previous">anterior</string>
+    <string name="play">reproducir</string>
+    <string name="pause">pausar</string>
+    <string name="next">siguiente</string>
+    <string name="mute">Silenciar</string>
+    <string name="unmute">Activar sonido</string>
+    <string name="open_spotify">Abrir Spotify</string>
+    <string name="spotify_not_installed">Spotify no está instalado</string>
+    <string name="music_image">Imagen de música</string>
+
+    <string name="ad_volume_title">Volumen de anuncios</string>
+    <string name="ad_volume_help">¿Qué significan los niveles?</string>
+    <string name="ad_volume_step_mute">Silencio</string>
+    <string name="ad_volume_state_mute">Los anuncios están silenciados</string>
+    <string name="ad_volume_state_percent">Los anuncios suenan al %1$d%% de tu volumen</string>
+    <string name="ad_volume_warning_title">Otros sonidos también bajan</string>
+    <string name="ad_volume_warning">Android tiene un solo volumen multimedia. Mientras suena un anuncio, otros sonidos, como videos o la navegación, también se oyen más bajo.</string>
+    <string name="ad_volume_help_message">Elige qué pasa mientras Spotify reproduce un anuncio:\n\n• Silencio: el anuncio no se oye.\n• Del 10% al 50%: el anuncio suena a ese porcentaje de tu volumen actual. Al 20%, un anuncio con volumen 12 suena a 2, aproximadamente.\n\nEl anuncio se mantiene en el nivel que elegiste, aunque uses los botones de volumen. Si mueves el control deslizante durante un anuncio, ese anuncio cambia al instante. Cuando termina el anuncio, tu volumen vuelve a estar como antes. Si silenciaste el teléfono antes del anuncio, sigue silenciado hasta que vuelvas a activar el sonido.\n\nAndroid tiene un solo volumen multimedia, así que otros sonidos también bajan durante un anuncio.</string>
+
+    <string name="tips_title">Consejos</string>
+    <string name="tips_battery">-> Permite que Mutify se ejecute en segundo plano y desactiva cualquier restricción de batería para Mutify, para que funcione correctamente.</string>
+    <string name="tips_notification_access">-> Mutify necesita el acceso a notificaciones para ver lo que reproduce Spotify. Solo lee la información multimedia de Spotify.</string>
+    <string name="tips_manual_mute">-> Si se cuela un anuncio, puedes tocar Silenciar manualmente.</string>
+    <string name="tips_contact">-> Si tienes cualquier otro problema, contáctanos.</string>
+    <string name="warning_toast_message">Si quieres apoyar esta app, considera dejar una reseña en Play Store ;) </string>
+
+    <string name="toggle_tips">Ocultar consejos</string>
+    <string name="auto_launch_spotify">Abrir Spotify automáticamente</string>
+    <string name="theme">Tema</string>
+    <string name="theme_system">Predeterminado del sistema</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
+    <string name="language">Idioma</string>
+    <string name="about">Acerca de</string>
+
+    <string name="support_mutify">Apoyar a Mutify</string>
+    <string name="report_bug">Informar de un error</string>
+    <string name="support_message">Mutify es gratuito y de código abierto. Si te libra de los anuncios, puedes comprarle un café al desarrollador.</string>
+
+    <string name="update_downloading">Descargando actualización…</string>
+    <string name="update_canceled">Actualización cancelada…</string>
+    <string name="update_failed">Error en la actualización…</string>
+    <string name="update_install_failed">No se pudo instalar una actualización de Mutify…</string>
+    <string name="update_downloaded">Se acaba de descargar una actualización… ¿Reiniciar?</string>
+    <string name="update_restart">Reiniciar</string>
+
+    <string name="auto_start_message">Da a esta app el permiso de inicio automático para que funcione en segundo plano</string>
+    <string name="auto_start_continue">Continuar</string>
+
+    <string name="navigate_up">Navegar hacia arriba</string>
+    <string name="about_version">Versión %1$s</string>
+    <string name="about_links">Enlaces</string>
+    <string name="contact_us">Contáctanos</string>
+    <string name="about_rate">Valorar en Play Store</string>
+    <string name="about_github">Ver el código en GitHub</string>
+    <string name="about_telegram">Unirse al canal de Telegram</string>
+    <string name="about_privacy_policy">Política de privacidad</string>
+    <string name="about_disclaimer">Aviso legal</string>
+    <string name="about_disclaimer_text">Mutify es una app independiente de código abierto. No está afiliada, respaldada ni vinculada de ningún modo con Spotify AB. Spotify es una marca comercial de Spotify AB.\n\nMutify no bloquea, omite ni cambia anuncios, y no modifica Spotify. Solo baja el volumen multimedia de tu teléfono mientras Spotify reproduce un anuncio y lo vuelve a subir cuando el anuncio termina. Considera Spotify Premium para apoyar a los artistas que escuchas.\n\nMutify se ofrece tal cual, sin ninguna garantía. Úsala bajo tu propia responsabilidad.</string>
+    <string name="about_licenses">Licencias de código abierto</string>
+    <string name="about_licenses_text">Mutify está hecha con estas bibliotecas de código abierto:\n\n• AndroidX AppCompat, Activity, Core, ConstraintLayout y Navigation (The Android Open Source Project): Apache License 2.0\n\n• Material Components for Android (Google): Apache License 2.0\n\n• Google Play In-App Updates (Google): Play Core Software Development Kit Terms of Service\n\n• Fuente Poppins (Indian Type Foundry): SIL Open Font License 1.1\n\nMutify también es de código abierto; consulta su página de GitHub para ver el código fuente.</string>
+    <string name="about_contributors">Colaboradores</string>
+    <string name="contact_us_chooser">Elige una app de correo para enviar tus comentarios</string>
+    <string name="link_no_app">No se encontró ninguna app para abrir este enlace</string>
+    <string name="link_no_email_app">No se encontró ninguna app de correo</string>
+
+    <string name="onboarding_title">Permitir acceso a notificaciones</string>
+    <string name="onboarding_logo_description">Logotipo de Mutify</string>
+    <string name="onboarding_message">Mutify ve lo que reproduce Spotify a través de la notificación multimedia de Spotify y silencia los anuncios.\n\nPara ello, Android necesita que permitas el \'Acceso a notificaciones\' para Mutify. Mutify solo lee la información multimedia de Spotify e ignora todas las demás notificaciones.</string>
+    <string name="onboarding_open_settings">Abrir ajustes</string>
+    <string name="onboarding_restricted_hint">¿La instalaste fuera de Play Store? Si el interruptor está en gris o Android indica que el ajuste está restringido: abre Información de la aplicación, toca ⋮ (arriba a la derecha), elige \'Permitir ajustes restringidos\' y vuelve a intentarlo.</string>
+    <string name="onboarding_open_app_info">Abrir Información de la aplicación</string>
+    <string name="onboarding_access_missing">El acceso a notificaciones sigue desactivado. Activa Mutify en los ajustes y luego toca Listo.</string>
+    <string name="onboarding_done">Listo</string>
+    <string name="onboarding_later">Más tarde</string>
+    <string name="onboarding_settings_not_found">Abre Ajustes, busca “Acceso a notificaciones” y permite Mutify</string>
+
+    <string name="widget_description">Activa o desactiva el silencio de anuncios desde la pantalla de inicio</string>
+    <string name="widget_state_off">Desactivado</string>
+    <string name="widget_state_on">Activado</string>
+    <string name="widget_content_description">Mutify: %1$s</string>
+</resources>

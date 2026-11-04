@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    namespace 'live.teekamsuthar.mutify'
+    compileSdk 36
 
     defaultConfig {
         applicationId "live.teekamsuthar.mutify"
-        minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 11
-        versionName "1.0"
+        minSdk 21
+        targetSdk 36
+        versionCode 76
+        versionName "2.7.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -29,6 +29,14 @@ android {
                     'proguard-rules.pro'
         }
     }
+    androidResources {
+        // per-app language (Android 13+): lists every values-<lang> folder in a generated
+        // locale config; the default language is set in res/resources.properties
+        generateLocaleConfig true
+    }
+    buildFeatures {
+        buildConfig true // Utils uses BuildConfig.VERSION_CODE
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -37,16 +45,19 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'com.google.android.material:material:1.12.0'
+    // EdgeToEdge and window insets (targetSdk 35+ draws every screen edge to edge)
+    implementation 'androidx.activity:activity:1.10.1'
+    implementation 'androidx.core:core:1.16.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     implementation 'androidx.navigation:navigation-fragment:2.3.1'
     implementation 'androidx.navigation:navigation-ui:2.3.1'
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     // for requesting in-app reviews
-    implementation 'com.google.android.play:core:1.8.3'
+    implementation 'com.google.android.play:app-update:2.1.0'
     // debugImplementation because LeakCanary should only run in debug builds.
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
 }

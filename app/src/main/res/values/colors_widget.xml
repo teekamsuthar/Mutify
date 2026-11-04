@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- the home-screen widget's colours; fixed (not day/night), because a launcher draws the widget
+     over any wallpaper -->
+<resources>
+    <color name="widget_background_off">#F2191414</color>
+    <color name="widget_background_on">#FF1DB954</color>
+    <color name="widget_text_on">#FFFFFFFF</color>
+    <color name="widget_text_off">#B3FFFFFF</color>
+    <color name="widget_text_setup_needed">#FFFFFC2B</color>
+</resources>

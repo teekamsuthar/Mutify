@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="live.teekamsuthar.mutify">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <!--for android 11 https://developer.android.com/training/basics/intents/package-visibility?hl=de#package-name-->
     <queries>
         <package android:name="com.spotify.music" />
     </queries>
 
     <application
+        android:name=".MutifyApp"
         android:allowBackup="true"
         android:fullBackupContent="@xml/my_backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -17,31 +17,60 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!-- Android 12 and older have no per-app language setting: AppCompat stores the language
+             chosen in the overflow menu itself and applies it at start -->
         <service
-            android:name=".NotificationService"
-            android:enabled="true" />
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
 
-        <receiver
-            android:name=".SpotifyBroadcastReceiver"
-            android:enabled="true"
+        <!-- reads Spotify's media session to detect and mute ads; needs the user's notification access.
+             The system keeps it bound while access is granted, so no foreground service is needed. -->
+        <service
+            android:name=".SpotifyAdListenerService"
             android:exported="true"
-            android:permission="android.permission.A">
-
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
-                <action android:name="com.spotify.music.playbackstatechanged" />
-                <action android:name="com.spotify.music.metadatachanged" />
-                <action android:name="com.spotify.music.queuechanged" />
-                <action android:name="com.spotify.music.active" />
+                <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
+        </service>
 
-        </receiver>
+        <!-- Quick Settings tile (Android 7+): shows the status and switches muting on or off -->
+        <service
+            android:name=".MutifyTileService"
+            android:enabled="@bool/tile_service_enabled"
+            tools:targetApi="n"
+            android:exported="true"
+            android:icon="@drawable/ic_tile_mutify"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
 
+        <!-- home-screen widget: shows the status and switches muting on or off. Not exported: the
+             system delivers widget updates anyway, and its own taps reach it by explicit component -->
         <receiver
-            android:name=".StopServiceBroadcastReceiver"
-            android:enabled="true" />
+            android:name=".MutifyWidgetProvider"
+            android:exported="false"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/mutify_widget_info" />
+        </receiver>
 
         <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
@@ -51,6 +80,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".AboutActivity"
+            android:exported="false"
+            android:label="@string/about"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
     </application>
 

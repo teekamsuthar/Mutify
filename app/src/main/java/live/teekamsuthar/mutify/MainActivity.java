@@ -1,45 +1,56 @@
 package live.teekamsuthar.mutify;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityManager;
-import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.ColorStateList;
+import android.database.ContentObserver;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.AttrRes;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.core.os.LocaleListCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.TextViewCompat;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.color.MaterialColors;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.slider.Slider;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
@@ -47,25 +58,17 @@ import com.google.android.play.core.install.InstallStateUpdatedListener;
 import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.InstallStatus;
 import com.google.android.play.core.install.model.UpdateAvailability;
-import com.google.android.play.core.tasks.Task;
+import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static android.util.Log.i;
 import static com.google.android.play.core.install.model.ActivityResult.RESULT_IN_APP_UPDATE_FAILED;
 import static com.google.android.play.core.install.model.AppUpdateType.FLEXIBLE;
-import static live.teekamsuthar.mutify.StopServiceBroadcastReceiver.shouldCloseService;
 import static live.teekamsuthar.mutify.Utils.SPOTIFY_PACKAGE;
-import static live.teekamsuthar.mutify.Utils.getEmailIntent;
 import static live.teekamsuthar.mutify.Utils.getTimeStamp;
 import static live.teekamsuthar.mutify.Utils.getTimeStampFromDate;
 import static live.teekamsuthar.mutify.Utils.openApp;
@@ -75,38 +78,76 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
     private static final String TAG = "MAIN_ACTIVITY";
     private ImageButton togglePlayPause;
     private LinearLayout mediaButtons;
-    private Intent notificationService;
-    private static SwitchMaterial adSwitch;
-    private CardView tipsCardView;
-    private SpotifyBroadcastReceiver spotifyBroadcastReceiver;
+    private MaterialSwitch adSwitch;
+    private final CompoundButton.OnCheckedChangeListener adSwitchListener =
+            (buttonView, isChecked) -> checkSwitch(isChecked);
+    private MutifySettings settings;
+    private StatusPublisher statusPublisher;
+    private final StatusPublisher.Listener statusListener = this::renderStatus;
+    private View tipsCardView;
+    private SpotifySessionWatcher spotifySessionWatcher;
     private AudioManager audioManager;
     private TextView songInfoTextView, track, isPlaying, lastUpdated;
-    private int playbackPosition;
-    private ScheduledFuture<?> scheduledMute, scheduledUnMute;
+    /** In the main card: shown instead of the track while there is none to show. */
+    private TextView stateLine;
+    /** In the main card: an ad is being muted, or the media volume is muted. */
+    private TextView muteIndicator;
+    private MaterialButton muteButton;
+    private View songInfoLayout;
+    /** The status shown last; SETUP_NEEDED until the first render. */
+    private MutifyStatus shownStatus = MutifyStatus.SETUP_NEEDED;
+    /** Spotify reported a track since Mutify was last switched on. */
+    private boolean hasSong;
+    // volume keys change the media volume without telling the app: follow the stored volumes
+    private final ContentObserver volumeObserver = new ContentObserver(new Handler(Looper.getMainLooper())) {
+        @Override
+        public void onChange(boolean selfChange) {
+            updateMuteIndicator();
+        }
+    };
     private ImageView surpriseImageView;
     private AppUpdateManager appUpdateManager;
     private static final int MY_REQUEST_CODE = 17326;
     private static final String IN_APP_UPDATE = "InAppUpdateInfo";
-    ScheduledExecutorService scheduledMuteExecutorService, scheduledUnMuteExecutorService;
+    /** Preference: true until the first-launch onboarding was closed once. */
+    private static final String KEY_FIRST_LAUNCH = "isFirstTimeLaunch";
+    /** Saved state: the onboarding dialog was showing when the activity was recreated. */
+    private static final String STATE_ONBOARDING_SHOWING = "onboardingShowing";
+    /** Preference: the overflow menu's "Hide Tips" (illustration instead of the tips card). */
+    private static final String KEY_HIDE_TIPS = "hide_tips";
+    /** Preference: the overflow menu's "Auto-launch Spotify". */
+    private static final String KEY_AUTO_LAUNCH_SPOTIFY = "auto-launch-spotify";
+    private Onboarding onboarding;
     SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdgeInsets.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        EdgeToEdgeInsets.apply(findViewById(R.id.appBar), findViewById(R.id.scrollView));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        // init notification service intent
-        notificationService = new Intent(MainActivity.this, NotificationService.class);
+        // muting on/off is one stored setting; the status shown is derived from it
+        settings = MutifySettings.get(this);
+        statusPublisher = StatusPublisher.get(this);
         // init switch
         adSwitch = findViewById(R.id.adSwitch);
-        adSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> checkSwitch(isChecked));
+        adSwitch.setOnCheckedChangeListener(adSwitchListener);
         // initialize all TextViews
         track = findViewById(R.id.track);
         songInfoTextView = findViewById(R.id.songInfoTextView);
         isPlaying = findViewById(R.id.isPlaying);
         lastUpdated = findViewById(R.id.lastUpdated);
+        songInfoLayout = findViewById(R.id.songInfoLayout);
+        // the title's gradient spans the title's width, so it follows every layout of it
+        track.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
+                applyTrackGradient());
+        stateLine = findViewById(R.id.stateLine);
+        stateLine.setOnClickListener(v -> onboarding.show());
+        muteIndicator = findViewById(R.id.muteIndicator);
+        muteButton = findViewById(R.id.mute);
         tipsCardView = findViewById(R.id.cardView1);
         surpriseImageView = findViewById(R.id.imageView);
         surpriseImageView.setImageResource(getRandomImage());
@@ -117,113 +158,114 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         mediaButtons.setVisibility(View.GONE);
         // init audio manager
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        // init the broadcast listener with callback
-        spotifyBroadcastReceiver = new SpotifyBroadcastReceiver(this);
+        // follows Spotify's media session to show the current track
+        spotifySessionWatcher = new SpotifySessionWatcher(this, this);
         // init shared prefs
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        // check if Device currently muted or not
-        updateMuteIndicator();
-        // check for first time launch
-        isFirstTimeLaunch();
+        // Adjust Ads Volume card
+        initAdVolumeCard();
+        // tips card or illustration
+        if (prefs.getBoolean(KEY_HIDE_TIPS, false)) {
+            hideTips();
+        } else {
+            showTips();
+        }
+        // notification access onboarding: first launch, every start without access (Android's
+        // auto-restore brings prefs back after a reinstall, but not the access), or opened from
+        // the tile or widget
+        onboarding = new Onboarding(this, this::onOnboardingClosed);
+        if (savedInstanceState != null) {
+            // recreated (e.g. theme switched): restore the dialog only if it was showing
+            if (savedInstanceState.getBoolean(STATE_ONBOARDING_SHOWING)) {
+                onboarding.show();
+            }
+        } else {
+            boolean requested = consumeOnboardingRequest(getIntent());
+            if (requested || Utils.getBooleanPreferenceValue(this, KEY_FIRST_LAUNCH)
+                    || !SpotifyAdListenerService.hasNotificationAccess(this)) {
+                onboarding.show();
+            }
+        }
         // check for update
         checkIfUpdateAvailable();
+        // auto-launch Spotify: switch Mutify on and open Spotify, once per start of the screen
+        // (not again when it is recreated, e.g. after a theme change); without notification access
+        // only the onboarding shows, so Spotify does not cover it
+        if (savedInstanceState == null && prefs.getBoolean(KEY_AUTO_LAUNCH_SPOTIFY, false)
+                && isSpotifyInstalled() && SpotifyAdListenerService.hasNotificationAccess(this)) {
+            adSwitch.setChecked(true);
+            openSpotify();
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        // the tile or widget was tapped in Setup needed while this screen was open
+        if (consumeOnboardingRequest(intent)) {
+            onboarding.show();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(STATE_ONBOARDING_SHOWING, onboarding.isShowing());
+    }
+
+    // true once for an intent from the tile or widget that asks for the onboarding dialog
+    private static boolean consumeOnboardingRequest(@Nullable Intent intent) {
+        if (intent == null || !intent.getBooleanExtra(Onboarding.EXTRA_SHOW_ONBOARDING, false)) {
+            return false;
+        }
+        intent.removeExtra(Onboarding.EXTRA_SHOW_ONBOARDING);
+        return true;
+    }
+
+    private void onOnboardingClosed(boolean setupDone) {
+        MutifyStatus status = statusPublisher.refresh();
+        renderStatus(status);
+        if (setupDone) {
+            maybeOfferTile(status);
+        }
+        if (Utils.getBooleanPreferenceValue(this, KEY_FIRST_LAUNCH)) {
+            // first launch: the auto-start hint follows the onboarding, never on top of it
+            Utils.setBooleanPreferenceValue(this, KEY_FIRST_LAUNCH, false);
+            isChineseBrand();
+        }
+    }
+
+    // Android 13+: offer the Quick Settings tile once, after the setup is done, never on top of
+    // the onboarding dialog (closing it with access calls this again)
+    private void maybeOfferTile(MutifyStatus status) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && status != MutifyStatus.SETUP_NEEDED && !onboarding.isShowing()) {
+            MutifyTileService.offerToAddOnce(this);
+        }
     }
 
     @Override
     public void metadataChanged(Song song) {
         // live update TextView when metadata changed
-        track.setText(String.format("%s (%s)", song.getTrack(), getTimeStamp(song.getLength())));
-        songInfoTextView.setText(String.format("By %s\nFrom %s",
+        track.setText(getString(R.string.now_playing_track, song.getTrack(), getTimeStamp(song.getLength())));
+        songInfoTextView.setText(getString(R.string.now_playing_artist_album,
                 song.getArtist(), song.getAlbum()));
-        lastUpdated.setText(String.format("(info updated @%s)", getTimeStampFromDate(song.getTimeSent())));
+        lastUpdated.setText(getString(R.string.now_playing_updated, getTimeStampFromDate(song.getTimeSent())));
+        hasSong = true;
+        renderNowPlaying();
         // log new song
-        Log.i("New Song", song.getTrack());
+        Log.i("New Song", "'" + song.getTrack() + "'"); // Log.i throws on a null message
     }
 
     @Override
     public void playbackStateChanged(boolean playState, int playbackPos, Song song) {
-        playbackPosition = playbackPos;
+        // display only: SpotifyAdListenerService does the muting, also while this activity is gone
         updatePlayPauseButton(playState);
         if (playState) {
             isPlaying.setText(R.string.play_state_text);
         } else {
             isPlaying.setText(R.string.last_detected_song);
-        }
-        handleNewSongIntent(playState, song);
-    }
-
-    // triggered whenever playback state changes
-    private void handleNewSongIntent(boolean playState, Song song) {
-        // if existing mute timer, cancel it!
-        cancelMuteTimer("handle new song: ");
-        // handling timers according to playback state!
-        if (playState) {
-            // calculate delay
-            long delay = calculateTime(song);
-            setMuteTimer(delay);
-            // set a new 800ms unmute timer in case delay is positive and song starts playing!
-            if (delay > 0) {
-                setUnmuteTimer();
-            }
-        } else {
-            cancelMuteTimer("song PAUSED: ");
-            Log.v("Paused", "cancelling mute timer...");
-        }
-    }
-
-    private long calculateTime(Song songFromIntent) {
-        return songFromIntent.timeRemaining(playbackPosition) - songFromIntent.getElapsedTime();
-    }
-
-    private void cancelMuteTimer(String cause) {
-        if (scheduledMute != null && !scheduledMute.isCancelled()) {
-            if (scheduledMute.cancel(false)) {
-                Log.v(cause, "Mute timer cancelled...");
-            } else {
-                Log.w(cause, "Mute timer couldn't be cancelled...");
-            }
-        } else {
-            Log.d(cause, "No timer is set");
-        }
-    }
-
-    private void setMuteTimer(final long waitTime) {
-        // Create the scheduler & spawn a new thread pool with each timer.
-        scheduledMuteExecutorService = Executors.newScheduledThreadPool(1);
-        // Create the task to execute
-        final Runnable muteTask = () -> {
-            try {
-                mute();
-                // to avoid app freeze because of exception in thread https://stackoverflow.com/a/48181646/11141100
-                if (scheduledMute.isDone()) {
-                    scheduledMute.get(5, TimeUnit.SECONDS);
-                }
-            } catch (InterruptedException | CancellationException | ExecutionException | TimeoutException e) { // handle exceptions
-                Throwable cause = e.getCause();
-                Log.e("Exception", "Scheduled execution was interrupted/cancelled (muteTask):", cause);
-            }
-        };
-        scheduledMute = scheduledMuteExecutorService.schedule(muteTask, waitTime, TimeUnit.MILLISECONDS);
-        i("Muting in:", getTimeStamp(waitTime));
-    }
-
-    private void setUnmuteTimer() {
-        if (isDeviceMuted()) {
-            scheduledUnMuteExecutorService = Executors.newScheduledThreadPool(1);
-            // Create the task to execute
-            final Runnable unmuteTask = () -> {
-                try {
-                    unmute();
-                    if (scheduledUnMute.isDone()) {
-                        scheduledUnMute.get(5, TimeUnit.SECONDS);
-                    }
-                } catch (InterruptedException | CancellationException | ExecutionException | TimeoutException e) { // handle exceptions
-                    Throwable cause = e.getCause();
-                    Log.e("Exception", "Scheduled execution was interrupted/cancelled (Un-muteTask):", cause);
-                }
-            };
-            scheduledUnMute = scheduledUnMuteExecutorService.schedule(unmuteTask, 800, TimeUnit.MILLISECONDS);
-            i("UNMUTE in:", getTimeStamp(800));
         }
     }
 
@@ -252,63 +294,90 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         //  songCardView.setCardBackgroundColor(getResources().getColor(R.color.cardBackgroundNegative));
     }
 
+    // the user flipped the switch: write the setting; the screen follows through renderStatus
     public void checkSwitch(boolean isChecked) {
         if (isChecked) {
-            // make sure spotify is installed before starting the service
-            if (isSpotifyInstalled()) {
-                startService();
-            } else {
-                // if not installed, flick the switch back to off
-                adSwitch.setChecked(!adSwitch.isChecked());
-                // notify user // TODO: show a dialog instead
-                Toast.makeText(this, "Spotify is not installed", Toast.LENGTH_LONG).show();
+            if (!SpotifyAdListenerService.hasNotificationAccess(this)) {
+                // without notification access Mutify cannot see what Spotify plays
+                renderStatus(statusPublisher.refresh()); // flicks the switch back to off
+                onboarding.show();
+                return;
+            } else if (!isSpotifyInstalled()) {
+                renderStatus(statusPublisher.refresh()); // flicks the switch back to off
+                Toast.makeText(this, R.string.spotify_not_installed, Toast.LENGTH_LONG).show();
+                return;
             }
-            // show media buttons when service is on
-            mediaButtons.setVisibility(View.VISIBLE);
-        } else {
-            stopService();
-            // hide media buttons when service is off
-            mediaButtons.setVisibility(View.GONE);
         }
+        // the listener service reacts at once; switching off during an ad unmutes right away
+        settings.setEnabled(isChecked);
     }
 
-    private void startService() {
-        // create notification for Android above O
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(notificationService);
-        } else {
-            startService(notificationService);
+    // shows the current status: switch, media buttons, now playing and the mute indicator
+    private void renderStatus(MutifyStatus status) {
+        shownStatus = status;
+        boolean on = status.isOn();
+        if (adSwitch.isChecked() != on) {
+            // set the switch without treating it as a tap
+            adSwitch.setOnCheckedChangeListener(null);
+            adSwitch.setChecked(on);
+            adSwitch.setOnCheckedChangeListener(adSwitchListener);
         }
-        // intent filters for broadcast receiver
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(SpotifyBroadcastReceiver.BroadcastTypes.PLAYBACK_STATE_CHANGED);
-        filter.addAction(SpotifyBroadcastReceiver.BroadcastTypes.METADATA_CHANGED);
-        // register Spotify broadcast listener.
-        registerReceiver(spotifyBroadcastReceiver, filter);
+        // show media buttons and the current track only while Mutify is on
+        mediaButtons.setVisibility(on ? View.VISIBLE : View.GONE);
+        if (on) {
+            spotifySessionWatcher.start();
+        } else {
+            spotifySessionWatcher.stop();
+            // clear text-views
+            hasSong = false;
+            songInfoTextView.setText("");
+            isPlaying.setText("");
+            track.setText("");
+            lastUpdated.setText("");
+        }
+        renderNowPlaying();
+        // an ad was just muted or unmuted
+        updateMuteIndicator();
     }
 
-    private void stopService() {
-        try {
-            unregisterReceiver(spotifyBroadcastReceiver);
-            // Time is up. Kill the executor service and its thread pool.
-//            if (scheduledUnMuteExecutorService != null && scheduledMuteExecutorService != null) {
-//                scheduledMuteExecutorService.shutdown();
-//                scheduledUnMuteExecutorService.shutdown();
-//                Log.i("Stop Service", "Executor service is shutdown");
-//            } else {
-//                Log.d("Stop Service", "null");
-//            }
-        } catch (Exception e) {
-            // WTF!??
-            Log.wtf("error while stopping", e.getMessage());
+    // the track while Mutify is on and Spotify reported one; otherwise one line saying why not
+    private void renderNowPlaying() {
+        boolean showSong = shownStatus.isOn() && hasSong;
+        songInfoLayout.setVisibility(showSong ? View.VISIBLE : View.GONE);
+        stateLine.setVisibility(showSong ? View.GONE : View.VISIBLE);
+        if (showSong) {
+            return;
         }
-        stopService(notificationService); // stop logging service
-        cancelMuteTimer("Service Stopped");
-        // clear text-views
-        songInfoTextView.setText("");
-        isPlaying.setText("");
-        track.setText("");
-        lastUpdated.setText("");
+        boolean setupNeeded = shownStatus == MutifyStatus.SETUP_NEEDED;
+        @StringRes int text;
+        if (setupNeeded) {
+            text = R.string.main_state_setup_needed;
+        } else if (shownStatus.isOn()) {
+            text = R.string.main_state_waiting;
+        } else {
+            text = R.string.main_state_off;
+        }
+        stateLine.setText(text);
+        // in Setup needed the line opens the onboarding, so it looks like a link
+        stateLine.setClickable(setupNeeded);
+        stateLine.setTextColor(MaterialColors.getColor(stateLine,
+                setupNeeded ? androidx.appcompat.R.attr.colorPrimary
+                        : com.google.android.material.R.attr.colorOnSurfaceVariant));
+    }
+
+    // 2.6.2's olive-blue-purple gradient across the track title
+    private void applyTrackGradient() {
+        int width = track.getWidth() - track.getTotalPaddingLeft() - track.getTotalPaddingRight();
+        if (width <= 0) {
+            return;
+        }
+        track.getPaint().setShader(new LinearGradient(0, 0, width, 0,
+                new int[]{
+                        ContextCompat.getColor(this, R.color.track_gradient_start),
+                        ContextCompat.getColor(this, R.color.track_gradient_center),
+                        ContextCompat.getColor(this, R.color.track_gradient_end)},
+                null, Shader.TileMode.CLAMP));
+        track.invalidate();
     }
 
     // returns device's music volume
@@ -332,29 +401,38 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         if (isSpotifyInstalled()) {
             openApp(getApplicationContext(), SPOTIFY_PACKAGE);
         } else {
-            Toast.makeText(this, "Could not find spotify!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.spotify_not_installed, Toast.LENGTH_SHORT).show();
         }
     }
 
-    // returns true when notification service is running in the background
-    private boolean isNotificationServiceRunning() {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (NotificationService.class.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    // the muted indicator in the main card: an ad being muted (or played quieter), or the media
+    // volume muted (Mute button, volume keys); hidden otherwise. Replaces 2.6.2's red navigation
+    // bar, which Android 15+ no longer draws.
     private void updateMuteIndicator() {
-        if (isDeviceMuted()) {
-            // change nav-bar color to indicate the device muted.
-            getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.Red));
+        muteButton.setText(isDeviceMuted() ? R.string.unmute : R.string.mute);
+        @StringRes int text;
+        @AttrRes int background;
+        @AttrRes int foreground;
+        if (shownStatus == MutifyStatus.AD_MUTED) {
+            text = settings.getAdVolumeStep() == AdVolumeSession.STEP_MUTE
+                    ? R.string.mute_indicator_ad_muted : R.string.mute_indicator_ad_quieter;
+            background = com.google.android.material.R.attr.colorPrimaryContainer;
+            foreground = com.google.android.material.R.attr.colorOnPrimaryContainer;
+        } else if (isDeviceMuted()) {
+            text = R.string.mute_indicator_device_muted;
+            background = com.google.android.material.R.attr.colorErrorContainer;
+            foreground = com.google.android.material.R.attr.colorOnErrorContainer;
         } else {
-            // change nav-bar color to indicate device un-muted.
-            getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.colorPrimary));
+            muteIndicator.setVisibility(View.GONE);
+            return;
         }
+        int foregroundColor = MaterialColors.getColor(muteIndicator, foreground);
+        muteIndicator.setText(text);
+        muteIndicator.setTextColor(foregroundColor);
+        TextViewCompat.setCompoundDrawableTintList(muteIndicator, ColorStateList.valueOf(foregroundColor));
+        ViewCompat.setBackgroundTintList(muteIndicator,
+                ColorStateList.valueOf(MaterialColors.getColor(muteIndicator, background)));
+        muteIndicator.setVisibility(View.VISIBLE);
     }
 
     // returns a random image resource id from the ArrayList
@@ -371,12 +449,20 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         return items.get(new Random().nextInt(items.size()));
     }
 
-    // check switch if service is already running & restore switch's "running" state when app bring to foreground.
-    private void checkServiceState() {
-        if (isNotificationServiceRunning() && !prefs.getBoolean("auto-launch-spotify", false) && !shouldCloseService) {
-            adSwitch.setChecked(true);
-            Log.d(TAG, "Turned switch on after activity was destroyed!");
-        }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // follow status changes (tile, widget, ads, access) while the screen is visible
+        statusPublisher.addListener(statusListener);
+        // the media volume can change while the screen is visible (volume keys)
+        getContentResolver().registerContentObserver(Settings.System.CONTENT_URI, true, volumeObserver);
+    }
+
+    @Override
+    protected void onStop() {
+        statusPublisher.removeListener(statusListener);
+        getContentResolver().unregisterContentObserver(volumeObserver);
+        super.onStop();
     }
 
     @Override
@@ -384,10 +470,11 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         super.onResume();
         // insures correct play/pause drawable is shown at resume
         updatePlayPauseButton(audioManager.isMusicActive());
-        // check if the device currently muted or not
-        updateMuteIndicator();
-        // check if service is already running.
-        checkServiceState();
+        // re-check everything (the muted indicator included), notification access included: the user may have changed it meanwhile
+        MutifyStatus status = statusPublisher.refresh();
+        renderStatus(status);
+        // Android 13+: offer the Quick Settings tile once, after the setup is done
+        maybeOfferTile(status);
         // prompt user if a new update has already downloaded and ready to be installed.
         appUpdateManager.getAppUpdateInfo().addOnSuccessListener(appUpdateInfo -> {
             if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
@@ -403,93 +490,121 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
 //        }
     }
 
-    public static void closeSwitch() {
-        adSwitch.setChecked(false);
-        shouldCloseService = false;
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        // to send app in background when back key pressed
-        moveTaskToBack(true);
-    }
+    // No onBackPressed override: back uses the platform default (predictive back; since Android 12
+    // a root activity is moved to the background instead of being finished).
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        // set dark mode toggle
-        menu.findItem(R.id.toggleDarkMode).setChecked(prefs.getBoolean("enabled", false));
-        if (menu.findItem(R.id.toggleDarkMode).isChecked()) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        menu.findItem(R.id.toggleTips).setChecked(prefs.getBoolean(KEY_HIDE_TIPS, false));
+        menu.findItem(R.id.autoLaunchSpotify).setChecked(prefs.getBoolean(KEY_AUTO_LAUNCH_SPOTIFY, false));
+        menu.findItem(themeMenuItem(settings.getThemeMode())).setChecked(true);
+        menu.findItem(languageMenuItem(AppLanguage.fromTags(
+                AppCompatDelegate.getApplicationLocales().toLanguageTags()))).setChecked(true);
+        return true;
+    }
+
+    private static int languageMenuItem(AppLanguage language) {
+        switch (language) {
+            case ENGLISH:
+                return R.id.languageEnglish;
+            case GERMAN:
+                return R.id.languageGerman;
+            case SPANISH:
+                return R.id.languageSpanish;
+            case FRENCH:
+                return R.id.languageFrench;
+            case PORTUGUESE_BRAZIL:
+                return R.id.languagePortugueseBrazil;
+            case VIETNAMESE:
+                return R.id.languageVietnamese;
+            default:
+                return R.id.languageSystem;
         }
-        // show/hide tips toggle
-        menu.findItem(R.id.toggleTips).setChecked(prefs.getBoolean("hide_tips", false));
-        if (menu.findItem(R.id.toggleTips).isChecked()) {
-            hideTips();
-        } else {
-            showTips();
-        }
-        // auto-launch spotify
-        menu.findItem(R.id.autoLaunchSpotify).setChecked(prefs.getBoolean("auto-launch-spotify", false));
-        if (menu.findItem(R.id.autoLaunchSpotify).isChecked()) {
-            if (isSpotifyInstalled()) {
-                // start service and then launch Spotify
-                adSwitch.setChecked(true);
-                openSpotify();
+    }
+
+    @Nullable
+    private static AppLanguage languageForMenuItem(int id) {
+        for (AppLanguage language : AppLanguage.values()) {
+            if (languageMenuItem(language) == id) {
+                return language;
             }
         }
-        return true;
+        return null;
+    }
+
+    private static int themeMenuItem(ThemeMode mode) {
+        switch (mode) {
+            case LIGHT:
+                return R.id.themeLight;
+            case DARK:
+                return R.id.themeDark;
+            default:
+                return R.id.themeSystem;
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.play_store_link) {
-            redirectToPlayStore();
+        if (id == R.id.support) {
+            showSupportDialog();
             return true;
         }
-        if (id == R.id.toggleDarkMode) {
-            item.setChecked(!item.isChecked());
-            if (item.isChecked()) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                prefs.edit().putBoolean("enabled", true).apply();
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                prefs.edit().putBoolean("enabled", false).apply();
-            }
+        if (id == R.id.reportBug) {
+            ExternalLinks.openUrl(this, getString(R.string.url_github_issues));
+            return true;
+        }
+        if (id == R.id.about) {
+            startActivity(new Intent(this, AboutActivity.class));
+            return true;
+        }
+        if (id == R.id.themeSystem || id == R.id.themeLight || id == R.id.themeDark) {
+            item.setChecked(true);
+            // MutifyApp applies it app-wide; this screen is recreated in the new theme
+            settings.setThemeMode(id == R.id.themeLight ? ThemeMode.LIGHT
+                    : id == R.id.themeDark ? ThemeMode.DARK : ThemeMode.SYSTEM);
+            return true;
+        }
+        AppLanguage language = languageForMenuItem(id);
+        if (language != null) {
+            item.setChecked(true);
+            // AppCompat stores it (on Android 13+ as the system's per-app language) and recreates
+            // the open screens in the new language
+            AppCompatDelegate.setApplicationLocales(language == AppLanguage.SYSTEM
+                    ? LocaleListCompat.getEmptyLocaleList()
+                    : LocaleListCompat.forLanguageTags(language.tag));
             return true;
         }
         if (id == R.id.toggleTips) {
             item.setChecked(!item.isChecked());
+            prefs.edit().putBoolean(KEY_HIDE_TIPS, item.isChecked()).apply();
             if (item.isChecked()) {
-                prefs.edit().putBoolean("hide_tips", true).apply();
                 hideTips();
             } else {
-                prefs.edit().putBoolean("hide_tips", false).apply();
                 showTips();
             }
             return true;
         }
         if (id == R.id.autoLaunchSpotify) {
             item.setChecked(!item.isChecked());
-            if (item.isChecked()) {
-                prefs.edit().putBoolean("auto-launch-spotify", true).apply();
-            } else {
-                prefs.edit().putBoolean("auto-launch-spotify", false).apply();
-            }
+            prefs.edit().putBoolean(KEY_AUTO_LAUNCH_SPOTIFY, item.isChecked()).apply();
             return true;
         }
-        if (id == R.id.contact_us) {
-            /* get email Intent */
-            Intent sendEmail = getEmailIntent();
-            /* Send it off to the Activity-Chooser */
-            startActivity(Intent.createChooser(sendEmail, "Choose an email app to send your feedback!"));
-        }
         return super.onOptionsItemSelected(item);
+    }
+
+    // toolbar heart: Buy Me a Coffee, with PayPal as the alternative
+    private void showSupportDialog() {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.support_mutify)
+                .setMessage(R.string.support_message)
+                .setPositiveButton(R.string.support_buy_me_a_coffee,
+                        (dialog, which) -> ExternalLinks.openUrl(this, getString(R.string.url_buy_me_a_coffee)))
+                .setNeutralButton(R.string.support_paypal,
+                        (dialog, which) -> ExternalLinks.openUrl(this, getString(R.string.url_paypal)))
+                .show();
     }
 
     private void hideTips() {
@@ -502,18 +617,60 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         surpriseImageView.setVisibility(View.GONE);
     }
 
+    // Adjust Ads Volume: a 6-step slider (mute, 10–50 %) stored in MutifySettings; the listener
+    // service applies a new step to a running ad at once (the slider wins over the volume keys
+    // during an ad) and to every later ad
+    private void initAdVolumeCard() {
+        Slider slider = findViewById(R.id.adVolumeSlider);
+        TextView state = findViewById(R.id.adVolumeState);
+        slider.setLabelFormatter(value -> adVolumeStepLabel(Math.round(value)));
+        int step = settings.getAdVolumeStep();
+        slider.setValue(step);
+        state.setText(adVolumeStepDescription(step));
+        slider.addOnChangeListener((s, value, fromUser) -> {
+            int newStep = Math.round(value);
+            state.setText(adVolumeStepDescription(newStep));
+            if (fromUser) {
+                settings.setAdVolumeStep(newStep);
+                // during an ad the indicator says "muted" or "quieter" by the step
+                updateMuteIndicator();
+            }
+        });
+        findViewById(R.id.adVolumeHelp).setOnClickListener(v -> new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.ad_volume_title)
+                .setMessage(R.string.ad_volume_help_message)
+                .setPositiveButton(android.R.string.ok, null)
+                .show());
+        findViewById(R.id.adVolumeWarning).setOnClickListener(v -> new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.ad_volume_warning_title)
+                .setMessage(R.string.ad_volume_warning)
+                .setPositiveButton(android.R.string.ok, null)
+                .show());
+    }
+
+    private String adVolumeStepLabel(int step) {
+        return step == AdVolumeSession.STEP_MUTE
+                ? getString(R.string.ad_volume_step_mute)
+                : getString(R.string.ad_volume_step_percent, step * 10);
+    }
+
+    private String adVolumeStepDescription(int step) {
+        return step == AdVolumeSession.STEP_MUTE
+                ? getString(R.string.ad_volume_state_mute)
+                : getString(R.string.ad_volume_state_percent, step * 10);
+    }
+
     public void showSupportToast(View view) {
         Toast infoToast = new Toast(this);
         infoToast.setGravity(Gravity.CENTER, 0, 0);
         Toast.makeText(this, getString(R.string.warning_toast_message), Toast.LENGTH_LONG).show();
     }
 
+    // one button: mutes the media volume, or unmutes it when it is muted (label follows the state)
     public void handleMuteUnmute(View view) {
-        int id = view.getId();
-        // handle taps on mute/unMute buttons
-        if (id == R.id.unMute) {
+        if (isDeviceMuted()) {
             unmute();
-        } else if (id == R.id.mute) {
+        } else {
             mute();
         }
     }
@@ -550,66 +707,11 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
     private void updatePlayPauseButton(boolean isMusicActive) {
         if (isMusicActive) {
             togglePlayPause.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_baseline_pause));
+            togglePlayPause.setContentDescription(getString(R.string.pause));
         } else {
             togglePlayPause.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_baseline_play_arrow));
+            togglePlayPause.setContentDescription(getString(R.string.play));
         }
-    }
-
-    // checks if the app has started for the first time
-    private void isFirstTimeLaunch() {
-        if (Utils.getBooleanPreferenceValue(this, "isFirstTimeLaunch")) {
-            showAlertDialog();
-            Log.d(TAG, "First time Launch");
-        }
-    }
-
-    // show a dialog to enable device broadcast status from spotify.
-    private void showAlertDialog() {
-        // defining custom text views
-        TextView titleView = new TextView(this);
-        titleView.setText(getString(R.string.dialog_title));
-        titleView.setTextSize(20.0f);
-        titleView.setPadding(15, 20, 15, 20);
-        titleView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        TextView messageView = new TextView(this);
-        messageView.setText(getString(R.string.dialog_message));
-        messageView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        messageView.setTextSize(16.0f);
-        // setting views to dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCustomTitle(titleView);
-        builder.setView(messageView);
-        builder.setCancelable(false);
-        // Do nothing inside click listeners because we override this button later to change the close behaviour.
-        builder.setPositiveButton(R.string.dialog_positive_btn, (dialog, which) -> {
-        });
-        builder.setNegativeButton(R.string.dialog_negative_btn, (dialog, which) -> {
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-        // Overriding the handler immediately after show (to prevent dialog closing after clicking the button).
-        Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-        positive.setOnClickListener(v -> {
-            if (isSpotifyInstalled()) {
-                // open Spotify settings on api above v24.
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    Intent spotifySettings = new Intent("android.intent.action.APPLICATION_PREFERENCES").setPackage(SPOTIFY_PACKAGE);
-                    startActivity(spotifySettings);
-                    Toast.makeText(this, "Scroll down and Enable Device Broadcast Status…", Toast.LENGTH_LONG).show();
-                } else {
-                    openSpotify();
-                    Toast.makeText(this, "Enable Device Broadcast Status from Spotify settings…", Toast.LENGTH_LONG).show();
-                }
-            } else {
-                Toast.makeText(this, "Couldn't find Spotify installed!", Toast.LENGTH_SHORT).show();
-            }
-        });
-        negative.setOnClickListener(v -> {
-            Utils.setBooleanPreferenceValue(this, "isFirstTimeLaunch", false); // set boolean then dismiss
-            dialog.dismiss();
-            isChineseBrand();
-        });
     }
 
     // returns true if Spotify installed on device
@@ -621,40 +723,6 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         }
         List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         return !list.isEmpty();
-    }
-
-    // open Play Store app for rate & review
-    private void redirectToPlayStore() {
-        try {
-            Uri updateUrl = Uri.parse("market://details?id=" + getPackageName());
-            final Intent intent = new Intent(Intent.ACTION_VIEW, updateUrl);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-                    Intent.FLAG_ACTIVITY_NO_HISTORY |
-                    Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
-                    Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            startActivity(intent);
-        } catch (Exception e) {
-            Toast.makeText(this, "Something went wrong!", Toast.LENGTH_SHORT).show();
-        }
-
-        // TODO: implement in-app review in later versions of Mutify
-//      // ReviewManager manager = new FakeReviewManager(this); // to fake the behaviour
-//      // ReviewManager manager = ReviewManagerFactory.create(this);
-//        Task<ReviewInfo> request = manager.requestReviewFlow();
-//        request.addOnCompleteListener(task -> {
-//            if (task.isSuccessful()) {
-//                // We can get the ReviewInfo object
-//                ReviewInfo reviewInfo = task.getResult();
-//                Task<Void> flow = manager.launchReviewFlow(this, reviewInfo);
-//                flow.addOnCompleteListener(task2 -> {
-//                    // The flow has finished. The API does not indicate whether the user.
-//                    // reviewed or not, or even whether the review dialog was shown. Thus, no
-//                    // matter the result, we continue our app flow.
-//                });
-//            } else {
-//                // There was some problem, continue regardless of the result.
-//            }
-//        });
     }
 
     // In-app update flexible workflow https://stackoverflow.com/a/57221648/11141100
@@ -696,7 +764,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
                 Log.d(IN_APP_UPDATE, "Update Downloaded");
                 break;
             case InstallStatus.FAILED:
-                Toast.makeText(this, "Failed to Install an Update for Mutify…", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.update_install_failed, Toast.LENGTH_LONG).show();
                 Log.d(IN_APP_UPDATE, "Failed");
                 break;
             // for logging purpose only
@@ -712,17 +780,18 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        onboarding.dismissQuietly();
         // unregister listener for In app update
         appUpdateManager.unregisterListener(listener);
+        spotifySessionWatcher.stop();
     }
 
     private void notifyUserToUpdate() {
         Snackbar snackbar =
                 Snackbar.make(findViewById(android.R.id.content),
-                        "An update has just been downloaded… Restart?",
+                        R.string.update_downloaded,
                         Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction("RESTART", view -> appUpdateManager.completeUpdate());
-        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+        snackbar.setAction(R.string.update_restart, view -> appUpdateManager.completeUpdate());
         snackbar.show();
     }
 
@@ -732,15 +801,15 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         if (requestCode == MY_REQUEST_CODE) {
             switch (resultCode) {
                 case RESULT_OK:
-                    Toast.makeText(this, "Downloading update…", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, R.string.update_downloading, Toast.LENGTH_LONG).show();
                     Log.d(IN_APP_UPDATE, "Downloading update: " + resultCode);
                     break;
                 case RESULT_CANCELED:
-                    Toast.makeText(this, "Update Canceled…", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, R.string.update_canceled, Toast.LENGTH_LONG).show();
                     Log.d(IN_APP_UPDATE, "Update Canceled: " + resultCode);
                     break;
                 case RESULT_IN_APP_UPDATE_FAILED:
-                    Toast.makeText(this, "Update Failed…", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, R.string.update_failed, Toast.LENGTH_LONG).show();
                     Log.d(IN_APP_UPDATE, "Update Failed: " + resultCode);
                     break;
                 default:
@@ -756,7 +825,7 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
         to run foreground notification in the background until user manually give permission for it)
      */
     private void isChineseBrand(){
-        String device = Build.MANUFACTURER.toLowerCase();
+        String device = Build.MANUFACTURER.toLowerCase(Locale.ROOT); // ROOT: a Turkish "I" must still match
         Intent intent;
         switch (device){
             case "xiaomi":
@@ -792,10 +861,10 @@ public class MainActivity extends AppCompatActivity implements ReceiverCallback 
     }
 
     private void showAutoStartPermissionDialog(Intent intent){
-        new AlertDialog.Builder(this)
-                .setMessage("Give this app the auto start permission in order to work in the background")
+        new MaterialAlertDialogBuilder(this)
+                .setMessage(R.string.auto_start_message)
                 .setCancelable(false)
-                .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.auto_start_continue, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         try{

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- No separate "Leaks" launcher icon in debug builds: it belongs to Mutify's package, so
+         uninstalling "Leaks" uninstalled Mutify. LeakCanary still reports leaks as a notification. -->
+    <bool name="leak_canary_add_launcher_icon">false</bool>
+</resources>

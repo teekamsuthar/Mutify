@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The About screen's credit opens this list (GitHub contributors of teekamsuthar/Mutify, plus
+         gupta-shrinath for the first translations, PR #6, and Fabian Köll for 2.7.0).
+         Names and GitHub handles in the same order; a tap opens github.com/<handle>. -->
+    <string-array name="contributor_names" translatable="false">
+        <item>Teekam Suthar</item>
+        <item>Sunilberwal266</item>
+        <item>Tehleel Mir</item>
+        <item>gupta-shrinath</item>
+        <item>Fabian Köll</item>
+    </string-array>
+    <string-array name="contributor_handles" translatable="false">
+        <item>teekamsuthar</item>
+        <item>Sunilberwal266</item>
+        <item>TehleelMir</item>
+        <item>gupta-shrinath</item>
+        <item>Koell</item>
+    </string-array>
+</resources>

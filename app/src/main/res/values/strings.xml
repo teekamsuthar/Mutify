@@ -1,32 +1,181 @@
 <resources>
-    <string name="app_name">Mutify</string>
-    <string name="action_settings">Settings</string>
-    <string name="open_spotify">Open Spotify</string>
-    <string name="mute_ads">Mute Ads</string>
+    <!-- App name; also the Quick Settings tile label and the About screen title. A brand, not translated. -->
+    <string name="app_name" translatable="false">Mutify</string>
+
+    <!-- Status texts shared by the Quick Settings tile (subtitle under "Mutify") and the home-screen
+         widget (label under the icon). Keep very short: about 12 characters, they are cut off otherwise. -->
+    <!-- Spotify plays an ad right now and Mutify has turned it down -->
+    <string name="status_ad_muted">Ad muted</string>
+    <!-- Mutify cannot work yet because notification access is not allowed -->
+    <string name="status_setup_needed">Setup needed</string>
+
+    <!-- main screen: header card -->
+    <!-- Title of the main on/off switch: brand phrase, as in 2.6.2, not translated (decided 2026-11-04) -->
+    <string name="mute_ads" translatable="false">Mutify Ads</string>
+    <!-- main card: what Mutify is doing when there is no track to show -->
+    <string name="main_state_setup_needed">Mutify needs notification access to see what Spotify plays. Tap here to set it up.</string>
+    <string name="main_state_off">Mutify is off. Switch it on to mute Spotify ads.</string>
+    <string name="main_state_waiting">Mutify is on. Play something in Spotify to see it here.</string>
+    <!-- main card: muted indicator, a small pill above the track -->
+    <string name="mute_indicator_ad_muted">Ad muted right now</string>
+    <string name="mute_indicator_ad_quieter">Ad playing quieter right now</string>
+    <string name="mute_indicator_device_muted">Media volume is muted</string>
+
+    <!-- main card: the track Spotify plays -->
+    <!-- Heading above the track while Spotify plays -->
+    <string name="play_state_text">Currently Playing</string>
+    <!-- Heading above the track while Spotify is paused -->
+    <string name="last_detected_song">Last Detected Song</string>
+    <!-- Track title and its length, e.g. "Blinding Lights (03:22)" -->
+    <string name="now_playing_track" translatable="false">%1$s (%2$s)</string>
+    <!-- Two lines under the track: %1$s = artist, %2$s = album -->
+    <string name="now_playing_artist_album">By %1$s\nFrom %2$s</string>
+    <!-- When the track info last changed; %1$s = time of day, e.g. "15:35:55" -->
+    <string name="now_playing_updated">(info updated @%1$s)</string>
+    <!-- Screen-reader descriptions of the media buttons -->
+    <string name="previous">previous</string>
+    <string name="play">play</string>
+    <string name="pause">pause</string>
+    <string name="next">next</string>
+    <!-- Buttons in one row under the track. They shrink their text to fit, but keep them short
+         (about 12 characters). "Mute" / "Unmute" switch the phone's media volume. -->
     <string name="mute">Mute</string>
     <string name="unmute">Unmute</string>
-    <string name="titleText">Tips</string>
-    <string name="toggle_tips">Hide Tips</string>
-    <string name="warningText">-> Allow Mutify to run in background and disable any battery restriction features for Mutify to work properly.</string>
-    <string name="warningText0">-> If you encounter any delay in muting/unmuting try disabling cross-fade between songs from Spotify settings.</string>
-    <string name="warningText1">-> Ads playing after you manually skip a track cannot be muted. You can manually press mute/unmute in that case.</string>
-    <string name="warningText2">-> Please Contact Us, if you face any other issues.</string>
-    <string name="warning_toast_message">Please consider leaving a review on the Play Store if you want to support this app ;) </string>
-    <string name="next">next</string>
-    <string name="pause">pause</string>
-    <string name="play">play</string>
-    <string name="previous">previous</string>
-    <string name="enable_dark_mode">Dark-Only Mode</string>
-    <string name="rate_app_in_play_store">Rate App in Play Store</string>
-    <string name="play_state_text">Currently Playing</string>
-    <string name="last_detected_song">Last Detected Song</string>
-    <string name="mute_timer_cancelled">Mute timer cancelled</string>
-    <string name="device_muted">Device was Muted</string>
-    <string name="dialog_title">Enable Device Broadcast Status</string>
-    <string name="dialog_message">Please enable \n\'Device Broadcast Status\'\n in Spotify settings for Mutify to work. \nMutify won\'t work without it.</string>
-    <string name="dialog_positive_btn">Open Spotify</string>
-    <string name="dialog_negative_btn">I have enabled it</string>
-    <string name="contact_us">Contact Us</string>
-    <string name="auto_launch_spotify">Auto-launch Spotify</string>
+    <string name="open_spotify">Open Spotify</string>
+    <string name="spotify_not_installed">Spotify is not installed</string>
+    <!-- Screen-reader description of the illustration shown instead of the tips -->
     <string name="music_image">Music Image</string>
+
+    <!-- main screen: Adjust Ads Volume card -->
+    <string name="ad_volume_title">Adjust Ads Volume</string>
+    <!-- Screen-reader description of the (?) icon next to the title -->
+    <string name="ad_volume_help">What do the steps mean?</string>
+    <!-- Slider step label (a state, "silent"), not the Mute button; shown in a small bubble, keep it short -->
+    <string name="ad_volume_step_mute">Mute</string>
+    <!-- Slider step label, e.g. "20%" -->
+    <string name="ad_volume_step_percent" translatable="false">%1$d%%</string>
+    <!-- Line under the slider for the selected step -->
+    <string name="ad_volume_state_mute">Ads are muted</string>
+    <!-- Line under the slider; %1$d = 10 to 50, followed by a percent sign -->
+    <string name="ad_volume_state_percent">Ads play at %1$d%% of your volume</string>
+    <!-- Title of the warning dialog; also the screen-reader description of the warning icon -->
+    <string name="ad_volume_warning_title">Other sounds get quieter too</string>
+    <string name="ad_volume_warning">Android has only one media volume. While an ad plays, other sounds such as videos or navigation get quieter too.</string>
+    <string name="ad_volume_help_message">Choose what happens while Spotify plays an ad:\n\n• Mute: the ad is silent.\n• 10% to 50%: the ad plays at that share of your current volume. At 20%, an ad at volume 12 plays at about 2.\n\nThe ad stays at the level you chose, even if you press the volume keys. Moving the slider during an ad changes that ad at once. When the ad is over, your volume comes back as it was. If you muted your phone before the ad, it stays muted until you unmute it.\n\nAndroid has only one media volume, so other sounds get quieter during an ad too.</string>
+
+    <!-- main screen: tips card. The "->" arrows are bullet marks. -->
+    <string name="tips_title">Tips</string>
+    <string name="tips_battery">-> Allow Mutify to run in background and disable any battery restriction features for Mutify to work properly.</string>
+    <string name="tips_notification_access">-> Mutify needs Notification access to see what Spotify is playing. It only looks at Spotify\'s media info.</string>
+    <string name="tips_manual_mute">-> If an ad slips through, you can still press Mute manually.</string>
+    <string name="tips_contact">-> Please Contact Us, if you face any other issues.</string>
+    <!-- Toast asking for a Play Store review -->
+    <string name="warning_toast_message">Please consider leaving a review on the Play Store if you want to support this app ;) </string>
+
+    <!-- overflow menu -->
+    <!-- Checkable menu item: shows an illustration instead of the tips card -->
+    <string name="toggle_tips">Hide Tips</string>
+    <!-- Checkable menu item: opens Spotify whenever Mutify is opened -->
+    <string name="auto_launch_spotify">Auto-launch Spotify</string>
+    <!-- theme setting (overflow menu) -->
+    <string name="theme">Theme</string>
+    <string name="theme_system">System default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+
+    <!-- app language (overflow menu, below Theme); "System default" reuses theme_system. The
+         language names are always written in their own language, so they are not translated. -->
+    <string name="language">Language</string>
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_german" translatable="false">Deutsch</string>
+    <string name="language_spanish" translatable="false">Español</string>
+    <string name="language_french" translatable="false">Français</string>
+    <string name="language_portuguese_brazil" translatable="false">Português (Brasil)</string>
+    <string name="language_vietnamese" translatable="false">Tiếng Việt</string>
+    <string name="about">About</string>
+
+    <!-- toolbar actions (heart and bug icons) -->
+    <string name="support_mutify">Support Mutify</string>
+    <string name="report_bug">Report a bug</string>
+    <string name="support_message">Mutify is free and open source. If it saves you from ads, you can buy the developer a coffee.</string>
+    <!-- Dialog buttons naming the payment services: brands, not translated -->
+    <string name="support_buy_me_a_coffee" translatable="false">Buy Me a Coffee</string>
+    <string name="support_paypal" translatable="false">PayPal</string>
+
+    <!-- in-app update (Google Play) -->
+    <string name="update_downloading">Downloading update…</string>
+    <string name="update_canceled">Update Canceled…</string>
+    <string name="update_failed">Update Failed…</string>
+    <string name="update_install_failed">Failed to Install an Update for Mutify…</string>
+    <!-- Bar at the bottom of the screen, followed by the update_restart button -->
+    <string name="update_downloaded">An update has just been downloaded… Restart?</string>
+    <!-- Button in that bar: restarts Mutify to install the update. Keep it short. -->
+    <string name="update_restart">Restart</string>
+
+    <!-- Dialog on Xiaomi, Huawei, Oppo, Vivo, OnePlus, Asus and Samsung phones; "Continue" opens the
+         phone's auto-start / battery settings -->
+    <string name="auto_start_message">Give this app the auto start permission in order to work in the background</string>
+    <string name="auto_start_continue">Continue</string>
+
+    <!-- About screen -->
+    <!-- Screen-reader description of the back arrow in the toolbar -->
+    <string name="navigate_up">Navigate up</string>
+    <!-- %1$s = version name, e.g. "2.7.0" -->
+    <string name="about_version">Version %1$s</string>
+    <!-- Section heading above the link list -->
+    <string name="about_links">Links</string>
+    <string name="contact_us">Contact Us</string>
+    <string name="about_rate">Rate on Play Store</string>
+    <string name="about_github">View source on GitHub</string>
+    <string name="about_telegram">Join Telegram Channel</string>
+    <string name="about_privacy_policy">Privacy Policy</string>
+    <string name="about_disclaimer">Disclaimer</string>
+    <string name="about_disclaimer_text">Mutify is an independent open-source app. It is not affiliated with, endorsed by or connected to Spotify AB in any way. Spotify is a trademark of Spotify AB.\n\nMutify does not block, skip or change ads, and it does not modify Spotify. It only turns your phone\'s media volume down while Spotify plays an ad and back up when the ad is over. Please consider Spotify Premium to support the artists you listen to.\n\nMutify is provided as is, without any warranty. Use it at your own risk.</string>
+    <string name="about_licenses">Open Source Licenses</string>
+    <!-- Library, author and licence names stay in English; only translate the sentences around them -->
+    <string name="about_licenses_text">Mutify is built with these open-source libraries:\n\n• AndroidX AppCompat, Activity, Core, ConstraintLayout and Navigation (The Android Open Source Project): Apache License 2.0\n\n• Material Components for Android (Google): Apache License 2.0\n\n• Google Play In-App Updates (Google): Play Core Software Development Kit Terms of Service\n\n• Poppins font (Indian Type Foundry): SIL Open Font License 1.1\n\nMutify itself is open source; see its GitHub page for the source code.</string>
+    <!-- Footer and title of the contributor list: "coded with love by Teekam Suthar". The same in
+         every language, so it is not translated. -->
+    <string name="about_credit" translatable="false">&lt;/&gt; with ♡ by Teekam Suthar ©</string>
+    <!-- Content description / hint of the credit: tapping it lists the contributors. -->
+    <string name="about_contributors">Contributors</string>
+    <!-- Title of Android's app picker when sending feedback by email -->
+    <string name="contact_us_chooser">Choose an email app to send your feedback</string>
+    <string name="link_no_app">No app found to open this link</string>
+    <string name="link_no_email_app">No email app found</string>
+    <!-- links: Telegram and Privacy Policy are filled in by the author; while empty, their About
+         entries stay hidden -->
+    <string name="url_telegram" translatable="false"></string>
+    <string name="url_privacy_policy" translatable="false"></string>
+    <string name="url_github" translatable="false">https://github.com/teekamsuthar/Mutify</string>
+    <string name="url_github_issues" translatable="false">https://github.com/teekamsuthar/Mutify/issues</string>
+    <string name="url_buy_me_a_coffee" translatable="false">https://www.buymeacoffee.com/teekamsuthar</string>
+    <string name="url_paypal" translatable="false">https://paypal.me/teekamsuthar</string>
+
+    <!-- onboarding dialog: notification access -->
+    <string name="onboarding_title">Allow Notification Access</string>
+    <!-- Screen-reader description of the logo (onboarding dialog and About screen) -->
+    <string name="onboarding_logo_description">Mutify logo</string>
+    <!-- 'Notification access' is the name of the Android setting; use the name Android shows in your language -->
+    <string name="onboarding_message">Mutify sees what Spotify plays through Spotify\'s media notification, and mutes the ads.\n\nFor that, Android needs you to allow \'Notification access\' for Mutify. Mutify only reads Spotify\'s media info and ignores every other notification.</string>
+    <string name="onboarding_open_settings">Open settings</string>
+    <!-- 'App info' and 'Allow restricted settings' are Android's own labels; use the names Android
+         shows in your language -->
+    <string name="onboarding_restricted_hint">Installed outside the Play Store? If the switch is greyed out or Android says the setting is restricted: open App info, tap ⋮ (top right), choose \'Allow restricted settings\' and try again.</string>
+    <string name="onboarding_open_app_info">Open App info</string>
+    <string name="onboarding_access_missing">Notification access is still off. Turn on Mutify in the settings, then tap Done.</string>
+    <!-- Dialog buttons; onboarding_done must match the "Done" in onboarding_access_missing -->
+    <string name="onboarding_done">Done</string>
+    <string name="onboarding_later">Later</string>
+    <!-- Toast when the phone has no notification-access screen to open: tells the user to search Settings for Android's own name of that setting -->
+    <string name="onboarding_settings_not_found">Open Settings, search for “Notification access” and allow Mutify there</string>
+
+    <!-- home-screen widget -->
+    <!-- Shown in the launcher's widget picker -->
+    <string name="widget_description">Switch ad muting on or off from your home screen</string>
+    <!-- Widget labels under the icon (see also status_*). Keep very short: about 12 characters. -->
+    <string name="widget_state_off">Off</string>
+    <string name="widget_state_on">On</string>
+    <!-- Screen-reader description of the widget; %1$s = its label, e.g. "Mutify: Ad muted" -->
+    <string name="widget_content_description">Mutify: %1$s</string>
 </resources>
