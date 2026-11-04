@@ -1,5 +1,6 @@
 package live.teekamsuthar.mutify;
 
+/** A Spotify item as the UI shows it; its texts are never null ("" when Spotify sent none). */
 public class Song {
     private final String id;
     private final String artist;
@@ -18,13 +19,18 @@ public class Song {
                 Integer length,
                 Long timeSent,
                 Long registeredTime) {
-        this.id = id;
-        this.artist = artist;
-        this.album = album;
-        this.track = track;
-        this.length = length;
-        this.timeSent = timeSent;
-        this.registeredTime = registeredTime;
+        // Spotify's metadata can lack any of these: store "" and 0, so showing or logging them is safe
+        this.id = orEmpty(id);
+        this.artist = orEmpty(artist);
+        this.album = orEmpty(album);
+        this.track = orEmpty(track);
+        this.length = length == null ? 0 : length;
+        this.timeSent = timeSent == null ? 0L : timeSent;
+        this.registeredTime = registeredTime == null ? 0L : registeredTime;
+    }
+
+    private static String orEmpty(String text) {
+        return text == null ? "" : text;
     }
 
     public String getId() {

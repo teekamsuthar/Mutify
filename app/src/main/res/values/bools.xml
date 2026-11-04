@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Quick Settings tiles exist from Android 7 (API 24); values-v24 switches the tile service on -->
+    <bool name="tile_service_enabled">false</bool>
+</resources>

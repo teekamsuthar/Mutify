@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- About screen as in 2.6.2: green app bar with back arrow; logo card with name and version;
+     Links card; credit to the author.
+     Edge to edge like the main screen: EdgeToEdgeInsets pads the app bar for the status bar and
+     the ScrollView for the navigation bar. The ScrollView must stay match_parent without
+     layout_gravity, or the scrolling behaviour's offset pushes its bottom padding under the
+     navigation bar. -->
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AboutActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/brand_green"
+        app:liftOnScroll="false">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            style="@style/Widget.Mutify.Toolbar"
+            android:theme="@style/ThemeOverlay.Mutify.Toolbar"
+            app:logo="@null"
+            app:navigationContentDescription="@string/navigate_up"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+            app:navigationIconTint="@color/on_brand_bar"
+            app:title="@string/about"
+            app:titleMarginStart="8dp" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="24dp">
+
+            <!-- logo card: logo, name, version -->
+            <com.google.android.material.card.MaterialCardView style="@style/Widget.Mutify.Card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_marginTop="8dp"
+                        android:contentDescription="@string/onboarding_logo_description"
+                        app:srcCompat="@drawable/mutify_logo_with_bg" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/app_name"
+                        android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/aboutVersion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        tools:text="Version 2.7.0" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Links card; the dividers skip hidden rows (Telegram and Privacy Policy stay
+                 hidden while their URL resource is empty) -->
+            <com.google.android.material.card.MaterialCardView style="@style/Widget.Mutify.Card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/about_link_divider"
+                    android:orientation="vertical"
+                    android:showDividers="middle">
+
+                    <TextView
+                        style="@style/Widget.Mutify.CardTitle"
+                        android:paddingBottom="8dp"
+                        android:text="@string/about_links" />
+
+                    <TextView
+                        android:id="@+id/aboutContact"
+                        style="@style/Widget.Mutify.LinkRow"
+                        android:text="@string/contact_us"
+                        app:drawableStartCompat="@drawable/ic_outline_email_24" />
+
+                    <TextView
+                        android:id="@+id/aboutRate"
+                        style="@style/Widget.Mutify.LinkRow"
+                        android:text="@string/about_rate"
+                        app:drawableStartCompat="@drawable/ic_brand_google_play_24" />
+
+                    <TextView
+                        android:id="@+id/aboutGitHub"
+                        style="@style/Widget.Mutify.LinkRow"
+                        android:text="@string/about_github"
+                        app:drawableStartCompat="@drawable/ic_brand_github_24" />
+
+                    <TextView
+                        android:id="@+id/aboutTelegram"
+                        style="@style/Widget.Mutify.LinkRow"
+                        android:text="@string/about_telegram"
+                        android:visibility="gone"
+                        app:drawableStartCompat="@drawable/ic_outline_send_24"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/aboutPrivacyPolicy"
+                        style="@style/Widget.Mutify.LinkRow"
+                        android:text="@string/about_privacy_policy"
+                        android:visibility="gone"
+                        app:drawableStartCompat="@drawable/ic_outline_shield_24"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/aboutDisclaimer"
+                        style="@style/Widget.Mutify.LinkRow"
+                        android:text="@string/about_disclaimer"
+                        app:drawableStartCompat="@drawable/ic_outline_info_24" />
+
+                    <TextView
+                        android:id="@+id/aboutLicenses"
+                        style="@style/Widget.Mutify.LinkRow"
+                        android:text="@string/about_licenses"
+                        app:drawableStartCompat="@drawable/ic_outline_description_24" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- credit to the author -->
+            <TextView
+                android:id="@+id/aboutCredit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/about_credit_background"
+                android:contentDescription="@string/about_contributors"
+                android:foreground="?attr/selectableItemBackground"
+                android:paddingStart="20dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="8dp"
+                android:text="@string/about_credit"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                android:textColor="@color/md_theme_onPrimaryContainer" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

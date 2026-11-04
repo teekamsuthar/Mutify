@@ -1,21 +1,62 @@
 <resources>
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:fontFamily">@font/poppins_regular</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
-        <item name="android:colorControlNormal">?attr/colorControlNormal</item>
-        <item name="android:statusBarColor">@color/actionBarColor</item>
-        <item name="android:navigationBarColor">@color/colorPrimary</item>
-    </style>
 
-    <!-- This will set the fade in animation on all your activities by default -->
-    <style name="WindowAnimationTransition">
-        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
-        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    <!-- App theme: Material 3 DayNight with Mutify's fixed brand scheme (values/colors.xml and
+         values-night/colors.xml, generated from the Spotify green). No dynamic colour. Light, dark
+         or the system's choice is set at runtime through AppCompat's night mode (MutifyApp). -->
+    <style name="AppTheme" parent="Theme.Material3.DayNight">
+        <item name="colorPrimary">@color/md_theme_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_onPrimaryContainer</item>
+        <item name="colorSecondary">@color/md_theme_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_onSecondaryContainer</item>
+        <item name="colorTertiary">@color/md_theme_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_onTertiaryContainer</item>
+        <item name="colorError">@color/md_theme_error</item>
+        <item name="colorOnError">@color/md_theme_onError</item>
+        <item name="colorErrorContainer">@color/md_theme_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/md_theme_onErrorContainer</item>
+        <item name="colorOnBackground">@color/md_theme_onBackground</item>
+        <item name="colorSurface">@color/md_theme_surface</item>
+        <item name="colorOnSurface">@color/md_theme_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_onSurfaceVariant</item>
+        <item name="colorSurfaceDim">@color/md_theme_surfaceDim</item>
+        <item name="colorSurfaceBright">@color/md_theme_surfaceBright</item>
+        <item name="colorSurfaceContainerLowest">@color/md_theme_surfaceContainerLowest</item>
+        <item name="colorSurfaceContainerLow">@color/md_theme_surfaceContainerLow</item>
+        <item name="colorSurfaceContainer">@color/md_theme_surfaceContainer</item>
+        <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh</item>
+        <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
+        <item name="colorOutline">@color/md_theme_outline</item>
+        <item name="colorOutlineVariant">@color/md_theme_outlineVariant</item>
+        <item name="android:colorBackground">@color/md_theme_background</item>
+        <item name="colorPrimaryInverse">@color/md_theme_inversePrimary</item>
+        <item name="colorSurfaceInverse">@color/md_theme_inverseSurface</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_inverseOnSurface</item>
+
+        <!-- Poppins everywhere: plain text views, and every Material 3 type scale -->
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+        <item name="textAppearanceDisplayLarge">@style/TextAppearance.Mutify.DisplayLarge</item>
+        <item name="textAppearanceDisplayMedium">@style/TextAppearance.Mutify.DisplayMedium</item>
+        <item name="textAppearanceDisplaySmall">@style/TextAppearance.Mutify.DisplaySmall</item>
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.Mutify.HeadlineLarge</item>
+        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.Mutify.HeadlineMedium</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.Mutify.HeadlineSmall</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.Mutify.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.Mutify.TitleMedium</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.Mutify.TitleSmall</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.Mutify.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Mutify.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.Mutify.BodySmall</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.Mutify.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.Mutify.LabelMedium</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.Mutify.LabelSmall</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -23,86 +64,173 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="MaterialTextViewTheme" parent="Widget.MaterialComponents.TextView">
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    <style name="TextAppearance.Mutify.DisplayLarge" parent="TextAppearance.Material3.DisplayLarge">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+    </style>
+    <style name="TextAppearance.Mutify.DisplayMedium" parent="TextAppearance.Material3.DisplayMedium">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+    </style>
+    <style name="TextAppearance.Mutify.DisplaySmall" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+    </style>
+    <style name="TextAppearance.Mutify.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+    </style>
+    <style name="TextAppearance.Mutify.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+    </style>
+    <style name="TextAppearance.Mutify.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+    </style>
+    <style name="TextAppearance.Mutify.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+    </style>
+    <style name="TextAppearance.Mutify.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+    </style>
+    <style name="TextAppearance.Mutify.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+    </style>
+    <style name="TextAppearance.Mutify.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+    </style>
+    <style name="TextAppearance.Mutify.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+    </style>
+    <style name="TextAppearance.Mutify.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+    </style>
+    <style name="TextAppearance.Mutify.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+    </style>
+    <style name="TextAppearance.Mutify.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+    </style>
+    <style name="TextAppearance.Mutify.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
     </style>
 
-    <style name="TextViewTheme" parent="Widget.AppCompat.TextView">
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
-        <item name="android:padding">2dp</item>
-        <item name="android:textAlignment">textStart</item>
-    </style>
-
-
-    <style name="ButtonTheme" parent="Widget.MaterialComponents.Button">
-        <item name="backgroundTint">@color/buttonBackground</item>
-        <item name="elevation">15dp</item>
-        <item name="rippleColor">@color/colorPrimary</item>
-        <item name="cornerRadius">12dp</item>
-        <item name="textAllCaps">false</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/WHITE</item>
-        <item name="android:colorControlNormal">?attr/colorControlNormal</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:layout_marginTop">7dp</item>
-        <item name="android:layout_marginBottom">7dp</item>
-    </style>
-
-    <style name="TextButtonTheme" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="elevation">15dp</item>
-        <item name="rippleColor">@color/colorPrimary</item>
-        <item name="textAllCaps">false</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/WHITE</item>
-    </style>
-
-    <!--    <item name="android:background">@drawable/button_background</item>-->
-
-    <style name="CardViewTheme" parent="Widget.MaterialComponents.CardView">
-        <item name="contentPadding">5dp</item>
-        <item name="cardElevation">7dp</item>
-        <item name="rippleColor">@color/colorPrimary</item>
-        <item name="cardCornerRadius">12dp</item>
-        <item name="android:backgroundTint">@color/cardViewBackground</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
-        <item name="android:colorControlNormal">?attr/colorControlNormal</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_marginTop">12dp</item>
-        <item name="android:layout_marginBottom">12dp</item>
-        <item name="android:layout_marginStart">12dp</item>
-        <item name="android:layout_marginEnd">12dp</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
-        <item name="android:foreground">?android:attr/selectableItemBackground</item>
-    </style>
-
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.DayNight.ActionBar">
-        <item name="background">?attr/colorSurface</item>
-        <item name="android:translationZ">8dp</item>
-        <item name="android:elevation">8dp</item>
-        <item name="titleMarginStart">30dp</item>
-    </style>
-    +
-
-    <style name="ToolbarTheme" parent="Widget.AppCompat.ActionBar">
-        <item name="logo">@drawable/mutify_logo_with_bg</item>
-        <item name="titleTextColor">?android:attr/textColorPrimary</item>
-        <item name="android:colorControlNormal">?attr/colorControlNormal</item>
-        <item name="android:background">@color/actionBarColor</item>
+    <!-- Green app bar (2.6.2): logo, title, heart and bug actions, overflow menu -->
+    <style name="Widget.Mutify.Toolbar" parent="Widget.Material3.Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="popupTheme">@style/AppTheme.PopupOverlay</item>
-        <item name="android:textAlignment">center</item>
+        <item name="android:background">@color/brand_green</item>
+        <item name="logo">@drawable/mutify_logo_with_bg</item>
+        <item name="titleMarginStart">24dp</item>
+        <item name="titleTextAppearance">@style/TextAppearance.Mutify.ToolbarTitle</item>
+        <item name="titleTextColor">@color/on_brand_bar</item>
+        <item name="popupTheme">@style/ThemeOverlay.Material3</item>
     </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.DayNight" />
+    <!-- tints the overflow icon on the green app bar -->
+    <style name="ThemeOverlay.Mutify.Toolbar" parent="">
+        <item name="colorControlNormal">@color/on_brand_bar</item>
+    </style>
+
+    <style name="TextAppearance.Mutify.ToolbarTitle" parent="TextAppearance.Mutify.TitleLarge">
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <!-- the screen's cards: large corners and a soft shadow, as in 2.6.2 -->
+    <style name="Widget.Mutify.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="cardBackgroundColor">?attr/colorSurfaceContainerHigh</item>
+        <item name="cardCornerRadius">28dp</item>
+        <item name="cardElevation">3dp</item>
+        <item name="contentPadding">20dp</item>
+    </style>
+
+    <!-- 2.6.2's green gradient pill buttons (Mute, Open Spotify, Unmute, Open settings) -->
+    <style name="Widget.Mutify.Button.Brand" parent="Widget.Material3.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/button_background</item>
+        <item name="backgroundTint">@null</item>
+        <item name="android:textColor">@color/on_brand_button</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+
+    <!-- a brand button in the Mute / Open Spotify / Unmute row: width from layout_weight, the text
+         shrinks (down to 11sp) rather than wrapping or being cut off -->
+    <style name="Widget.Mutify.Button.Brand.Row">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="autoSizeTextType">uniform</item>
+        <item name="autoSizeMinTextSize">11sp</item>
+        <item name="autoSizeMaxTextSize">15sp</item>
+    </style>
+
+    <!-- previous / play-pause / next: white icons on the green gradient -->
+    <style name="Widget.Mutify.MediaButton" parent="">
+        <item name="android:layout_width">56dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:layout_marginStart">12dp</item>
+        <item name="android:layout_marginEnd">12dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+        <item name="android:background">@drawable/media_button_background</item>
+        <item name="android:elevation">4dp</item>
+        <item name="android:scaleType">center</item>
+        <item name="tint">@color/on_brand_button</item>
+    </style>
+
+    <!-- body text in the cards -->
+    <style name="Widget.Mutify.CardText" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textAlignment">viewStart</item>
+    </style>
+
+    <style name="Widget.Mutify.CardTitle" parent="Widget.Mutify.CardText">
+        <item name="android:textAppearance">?attr/textAppearanceTitleLarge</item>
+    </style>
+
+    <!-- a row in the About screen's Links card: icon and label, the whole row tappable -->
+    <style name="Widget.Mutify.LinkRow" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:drawablePadding">20dp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="drawableTint">?attr/colorOnSurfaceVariant</item>
+    </style>
 
 </resources>

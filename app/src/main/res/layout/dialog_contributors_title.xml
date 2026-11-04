@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Title of the contributor list (About › tap the credit): the credit line on one line, the text
+     shrinks to fit instead of wrapping the "©" (or a longer translation) onto a second line -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:maxLines="1"
+    android:paddingStart="24dp"
+    android:paddingTop="24dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="8dp"
+    android:text="@string/about_credit"
+    android:textAppearance="?attr/textAppearanceTitleLarge"
+    android:textColor="?attr/colorOnSurface"
+    app:autoSizeMaxTextSize="22sp"
+    app:autoSizeMinTextSize="12sp"
+    app:autoSizeTextType="uniform" />

@@ -31,6 +31,28 @@ public class AdDetectorTest {
     }
 
     @Test
+    public void labelWithNothingElseMarksAnAdOfUnknownDuration() {
+        // the media notification has no duration: title, text, sub-text
+        assertTrue(AdDetector.isAd(0L, null, 0L, "Advertisement", null, ""));
+        assertTrue(AdDetector.isAd(0L, null, 0L, "Werbung", "Spotify", null));
+        assertTrue(AdDetector.isAd(0L, null, -1L, null, "Advertisement"));
+    }
+
+    @Test
+    public void labelAsSongTitleArtistOrAlbumOfUnknownDurationIsNoAd() {
+        assertFalse(AdDetector.isAd(0L, null, 0L, "Propaganda", "Sparks", "Propaganda"));
+        assertFalse(AdDetector.isAd(0L, null, 0L, "Dr. Mabuse", "Propaganda", "A Secret Wish"));
+        assertFalse(AdDetector.isAd(0L, null, 0L, "Duel", "Propaganda", "Propaganda"));
+        assertFalse(AdDetector.isAd(0L, null, 0L, "Lost in the Rain", "Some Band", "Werbung"));
+    }
+
+    @Test
+    public void strongSignalMarksAnAdOfUnknownDuration() {
+        assertTrue(AdDetector.isAd(1L, null, 0L, "Some Brand", "Some Brand"));
+        assertTrue(AdDetector.isAd(0L, "spotify:ad:abc", 0L, "Propaganda", "Sparks", "Propaganda"));
+    }
+
+    @Test
     public void normalTrackIsNoAd() {
         assertFalse(AdDetector.isAd(0L, "spotify:track:4uLU6hMCjMI75M1A2tKUQC", SONG_MS, "Bohemian Rhapsody", "Queen", "A Night at the Opera"));
         assertFalse(AdDetector.isAd(0L, null, 0L));

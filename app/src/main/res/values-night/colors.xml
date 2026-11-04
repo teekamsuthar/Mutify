@@ -1,20 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#1DB954</color>
-    <color name="colorPrimaryDark">#1DB954</color>
-    <color name="colorAccent">#9A00FF00</color>
+    <!-- Material 3 colour scheme, dark. Generated once from the Spotify green #1DB954 (Material
+         Theme Builder's default "tonal spot" scheme). Fixed: no dynamic (wallpaper) colour. -->
+    <color name="md_theme_primary">#9CD49F</color>
+    <color name="md_theme_onPrimary">#003914</color>
+    <color name="md_theme_primaryContainer">#1D5128</color>
+    <color name="md_theme_onPrimaryContainer">#B7F1BA</color>
+    <color name="md_theme_inversePrimary">#36693E</color>
+    <color name="md_theme_secondary">#B8CCB6</color>
+    <color name="md_theme_onSecondary">#243425</color>
+    <color name="md_theme_secondaryContainer">#3A4B3A</color>
+    <color name="md_theme_onSecondaryContainer">#D4E8D1</color>
+    <color name="md_theme_tertiary">#A1CED7</color>
+    <color name="md_theme_onTertiary">#00363D</color>
+    <color name="md_theme_tertiaryContainer">#1F4D54</color>
+    <color name="md_theme_onTertiaryContainer">#BDEAF3</color>
+    <color name="md_theme_error">#FFB4AB</color>
+    <color name="md_theme_onError">#690005</color>
+    <color name="md_theme_errorContainer">#93000A</color>
+    <color name="md_theme_onErrorContainer">#FFDAD6</color>
+    <color name="md_theme_background">#101510</color>
+    <color name="md_theme_onBackground">#E0E4DB</color>
+    <color name="md_theme_surface">#101510</color>
+    <color name="md_theme_onSurface">#E0E4DB</color>
+    <color name="md_theme_surfaceVariant">#424940</color>
+    <color name="md_theme_onSurfaceVariant">#C1C9BE</color>
+    <color name="md_theme_surfaceDim">#101510</color>
+    <color name="md_theme_surfaceBright">#363A35</color>
+    <color name="md_theme_surfaceContainerLowest">#0B0F0B</color>
+    <color name="md_theme_surfaceContainerLow">#181D18</color>
+    <color name="md_theme_surfaceContainer">#1C211C</color>
+    <color name="md_theme_surfaceContainerHigh">#272B26</color>
+    <color name="md_theme_surfaceContainerHighest">#313630</color>
+    <color name="md_theme_inverseSurface">#E0E4DB</color>
+    <color name="md_theme_inverseOnSurface">#2D322C</color>
+    <color name="md_theme_outline">#8B9389</color>
+    <color name="md_theme_outlineVariant">#424940</color>
 
+    <!-- Brand colours kept from 2.6.2: the green app bar and the green gradient buttons -->
+    <color name="brand_green">#1DB954</color>
+    <color name="brand_green_end">#1F9D6E</color>
+    <!-- dark in both modes: white on #1DB954 has too little contrast (decided 2026-11-04) -->
+    <color name="on_brand_bar">#191414</color>
+    <color name="on_brand_button">#FFFFFF</color>
 
-    <color name="trackColor">#1DB954</color>
-    <color name="GREEN">#00FF00</color>
-    <color name="Yellow">#FFFC2B</color>
-    <color name="WHITE">#FFFFFF</color>
-    <color name="cardBackgroundPositive">#1DB954</color>
-    <color name="cardBackgroundNegative">#000000</color>
-    <color name="actionBarColor">#1DB954</color>
-    <color name="buttonBackground">#1DB954</color>
-    <color name="cardViewBackground">#FF424242</color>
-    <color name="Black">#000000</color>
-    <color name="Red">#B2FF0000</color>
+    <!-- the track title's gradient (2.6.2): olive, blue, purple; a little lighter on dark -->
+    <color name="track_gradient_start">#C9BE5E</color>
+    <color name="track_gradient_center">#6BA2EC</color>
+    <color name="track_gradient_end">#A66BEA</color>
 
+    <!-- Adjust Ads Volume warning icon (amber, readable on the card) -->
+    <color name="adVolumeWarning">#FFB74D</color>
 </resources>

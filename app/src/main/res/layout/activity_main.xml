@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Main screen as in 2.6.2: green app bar; one main card (switch, now playing, media buttons,
+     Mute / Open Spotify / Unmute); illustration or tips; Adjust Ads Volume card.
+     Edge to edge: EdgeToEdgeInsets pads the app bar for the status bar and the ScrollView for the
+     navigation bar. The ScrollView must stay match_parent without layout_gravity, or the scrolling
+     behaviour's offset pushes its bottom padding under the navigation bar. -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,99 +12,137 @@
     tools:context=".MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:background="@color/brand_green"
+        app:liftOnScroll="false">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
-            style="@style/ToolbarTheme" />
+            style="@style/Widget.Mutify.Toolbar"
+            android:theme="@style/ThemeOverlay.Mutify.Toolbar" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="?attr/actionBarSize">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="24dp">
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardView"
-                style="@style/CardViewTheme">
+                style="@style/Widget.Mutify.Card">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:animateLayoutChanges="true"
+                    android:gravity="center_horizontal"
                     android:orientation="vertical">
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/adSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="10dp"
-                        android:elevation="8dp"
-                        android:scaleX="1.5"
-                        android:scaleY="1.5"
                         android:text="@string/mute_ads"
-                        app:switchPadding="10dp"
-                        app:thumbTint="@color/colorPrimaryDark"
-                        app:useMaterialThemeColors="true" />
+                        android:textAppearance="?attr/textAppearanceTitleLarge"
+                        android:textColor="?attr/colorOnSurface"
+                        app:switchPadding="16dp" />
 
-                    <!--                        android:thumb="@drawable/switch_thumb_selector"-->
-                    <!--                        app:track="@drawable/switch_track_selector"-->
-                    <!--                        android:onClick="checkSwitch"-->
+                    <!-- muted indicator: an ad is being muted, or the media volume is muted
+                         (replaces 2.6.2's red navigation bar, which Android 15+ no longer draws) -->
+                    <TextView
+                        android:id="@+id/muteIndicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:accessibilityLiveRegion="polite"
+                        android:background="@drawable/status_pill_background"
+                        android:drawablePadding="8dp"
+                        android:gravity="center_vertical"
+                        android:paddingStart="12dp"
+                        android:paddingTop="6dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="6dp"
+                        android:textAppearance="?attr/textAppearanceLabelLarge"
+                        android:visibility="gone"
+                        app:drawableStartCompat="@drawable/ic_mute"
+                        tools:text="@string/mute_indicator_device_muted"
+                        tools:visibility="visible" />
+
+                    <!-- shown instead of the track while there is none: setup needed, off, or
+                         waiting for Spotify -->
+                    <TextView
+                        android:id="@+id/stateLine"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="4dp"
+                        android:textAlignment="center"
+                        android:textAppearance="?attr/textAppearanceBodyLarge"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        tools:text="@string/main_state_off" />
 
                     <LinearLayout
                         android:id="@+id/songInfoLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="12dp"
-                        android:orientation="vertical">
+                        android:layout_marginTop="12dp"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        tools:visibility="visible">
 
                         <TextView
                             android:id="@+id/isPlaying"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginEnd="10dp"
                             android:textAlignment="center"
-                            android:textSize="16sp" />
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="18sp"
+                            tools:text="@string/play_state_text" />
 
+                        <!-- wrap_content: the gradient spans the title, not the card -->
                         <TextView
                             android:id="@+id/track"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginEnd="10dp"
+                            android:layout_gravity="center_horizontal"
                             android:textAlignment="center"
-                            android:textColor="@color/trackColor"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
+                            android:textAppearance="?attr/textAppearanceTitleLarge"
+                            android:textColor="?attr/colorPrimary"
+                            tools:text="Blinding Lights (03:22)" />
 
                         <TextView
                             android:id="@+id/songInfoTextView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginEnd="10dp"
                             android:textAlignment="center"
-                            android:textSize="18sp" />
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="19sp"
+                            tools:text="By The Weeknd\nFrom Blinding Lights" />
 
                         <TextView
                             android:id="@+id/lastUpdated"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginEnd="10dp"
                             android:textAlignment="center"
-                            android:textSize="14sp" />
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:textSize="15sp"
+                            tools:text="(info updated @15:35:55)" />
 
                     </LinearLayout>
 
@@ -107,129 +150,188 @@
                         android:id="@+id/mediaButtons"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
+                        android:layout_marginTop="8dp"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
+                        android:gravity="center_vertical"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
                         android:orientation="horizontal"
-                        android:scaleX="1.2"
-                        android:scaleY="1.2">
+                        android:visibility="gone"
+                        tools:visibility="visible">
 
                         <ImageButton
                             android:id="@+id/previous"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            style="@style/Widget.Mutify.MediaButton"
                             android:contentDescription="@string/previous"
                             android:onClick="handleMedia"
                             android:src="@drawable/ic_baseline_skip_previous_24" />
 
                         <ImageButton
                             android:id="@+id/togglePlayPause"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            style="@style/Widget.Mutify.MediaButton"
+                            android:layout_width="68dp"
+                            android:layout_height="68dp"
+                            android:background="@drawable/media_button_round_background"
                             android:contentDescription="@string/pause"
                             android:onClick="handleMedia"
                             android:src="@drawable/ic_baseline_play_arrow" />
 
                         <ImageButton
                             android:id="@+id/next"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            style="@style/Widget.Mutify.MediaButton"
                             android:contentDescription="@string/next"
                             android:onClick="handleMedia"
                             android:src="@drawable/ic_baseline_skip_next_24" />
 
                     </LinearLayout>
 
-                    <HorizontalScrollView
-                        android:layout_width="wrap_content"
+                    <!-- Mute-Unmute toggle and Open Spotify share the card width; the text shrinks to fit longer
+                         translations instead of the row running off the card -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center">
+                        android:layout_marginTop="12dp"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal">
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/mute"
+                            style="@style/Widget.Mutify.Button.Brand.Row"
+                            android:layout_weight="1"
+                            android:onClick="handleMuteUnmute"
+                            android:text="@string/mute" />
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/mute"
-                                style="@style/ButtonTheme"
-                                android:layout_marginStart="7dp"
-                                android:onClick="handleMuteUnmute"
-                                android:text="@string/mute" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/openSpotify"
-                                style="@style/ButtonTheme"
-                                android:layout_marginStart="7dp"
-                                android:layout_marginEnd="7dp"
-                                android:onClick="handleOpenSpotify"
-                                android:text="@string/open_spotify" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/unMute"
-                                style="@style/ButtonTheme"
-                                android:layout_marginEnd="7dp"
-                                android:onClick="handleMuteUnmute"
-                                android:text="@string/unmute" />
-
-                        </LinearLayout>
-                    </HorizontalScrollView>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/openSpotify"
+                            style="@style/Widget.Mutify.Button.Brand.Row"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1.5"
+                            android:onClick="handleOpenSpotify"
+                            android:text="@string/open_spotify" />
+                    </LinearLayout>
 
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:padding="10dp"
-                android:layout_marginTop="30dp"
-                android:contentDescription="@string/music_image" />
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/music_image"
+                android:maxHeight="240dp"
+                android:padding="10dp" />
 
-            <androidx.cardview.widget.CardView
+            <!-- Adjust Ads Volume: mute ads, or play them at 10–50 % of the current volume -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/adVolumeCard"
+                style="@style/Widget.Mutify.Card"
+                app:contentPaddingBottom="12dp"
+                app:contentPaddingTop="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/adVolumeTitle"
+                            style="@style/Widget.Mutify.CardTitle"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:text="@string/ad_volume_title" />
+
+                        <ImageButton
+                            android:id="@+id/adVolumeWarning"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/ad_volume_warning_title"
+                            android:src="@drawable/ic_baseline_warning_amber_24"
+                            app:tint="@color/adVolumeWarning" />
+
+                        <ImageButton
+                            android:id="@+id/adVolumeHelp"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_marginEnd="-12dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/ad_volume_help"
+                            android:src="@drawable/ic_baseline_help_outline_24"
+                            app:tint="?attr/colorPrimary" />
+
+                    </LinearLayout>
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/adVolumeSlider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:stepSize="1"
+                        android:valueFrom="0"
+                        android:valueTo="5"
+                        app:labelBehavior="floating"
+                        app:tickVisible="true" />
+
+                    <TextView
+                        android:id="@+id/adVolumeState"
+                        style="@style/Widget.Mutify.CardText"
+                        android:textAlignment="center"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardView1"
-                style="@style/CardViewTheme"
-                android:layout_marginBottom="20dp"
+                style="@style/Widget.Mutify.Card"
                 android:onClick="showSupportToast">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/titleText"
-                        style="@style/TextViewTheme"
-                        android:text="@string/titleText"
-                        android:textAlignment="center"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        style="@style/Widget.Mutify.CardTitle"
+                        android:layout_marginBottom="4dp"
+                        android:text="@string/tips_title"
+                        android:textAlignment="center" />
 
                     <TextView
                         android:id="@+id/appDesc0"
-                        style="@style/TextViewTheme"
-                        android:text="@string/warningText" />
+                        style="@style/Widget.Mutify.CardText"
+                        android:text="@string/tips_battery" />
 
                     <TextView
                         android:id="@+id/appDesc1"
-                        style="@style/TextViewTheme"
-                        android:text="@string/warningText0" />
+                        style="@style/Widget.Mutify.CardText"
+                        android:text="@string/tips_notification_access" />
 
                     <TextView
                         android:id="@+id/appDesc2"
-                        style="@style/TextViewTheme"
-                        android:text="@string/warningText1" />
+                        style="@style/Widget.Mutify.CardText"
+                        android:text="@string/tips_manual_mute" />
 
                     <TextView
                         android:id="@+id/appDesc3"
-                        style="@style/TextViewTheme"
-                        android:text="@string/warningText2" />
+                        style="@style/Widget.Mutify.CardText"
+                        android:text="@string/tips_contact" />
 
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
     </ScrollView>
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

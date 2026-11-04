@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- German. Context, length limits and Android setting names: see the comments in values/strings.xml. -->
+<resources>
+    <string name="status_ad_muted">Werbung stumm</string>
+    <string name="status_setup_needed">Einrichten</string>
+
+    <string name="main_state_setup_needed">Mutify braucht Benachrichtigungszugriff, um zu sehen, was Spotify spielt. Tippe hier, um ihn einzurichten.</string>
+    <string name="main_state_off">Mutify ist aus. Schalte es ein, um Spotify-Werbung stummzuschalten.</string>
+    <string name="main_state_waiting">Mutify ist an. Spiel etwas in Spotify ab, um es hier zu sehen.</string>
+    <string name="mute_indicator_ad_muted">Werbung gerade stummgeschaltet</string>
+    <string name="mute_indicator_ad_quieter">Werbung läuft gerade leiser</string>
+    <string name="mute_indicator_device_muted">Medienlautstärke ist stumm</string>
+
+    <string name="play_state_text">Läuft gerade</string>
+    <string name="last_detected_song">Zuletzt erkannter Titel</string>
+    <string name="now_playing_artist_album">Von %1$s\nAlbum: %2$s</string>
+    <string name="now_playing_updated">(Info aktualisiert um %1$s)</string>
+    <string name="previous">Vorheriger Titel</string>
+    <string name="play">Abspielen</string>
+    <string name="pause">Pause</string>
+    <string name="next">Nächster Titel</string>
+    <string name="mute">Stumm</string>
+    <string name="unmute">Ton an</string>
+    <string name="open_spotify">Spotify öffnen</string>
+    <string name="spotify_not_installed">Spotify ist nicht installiert</string>
+    <string name="music_image">Musik-Illustration</string>
+
+    <string name="ad_volume_title">Werbelautstärke</string>
+    <string name="ad_volume_help">Was bedeuten die Stufen?</string>
+    <string name="ad_volume_step_mute">Stumm</string>
+    <string name="ad_volume_state_mute">Werbung ist stummgeschaltet</string>
+    <string name="ad_volume_state_percent">Werbung läuft mit %1$d %% deiner Lautstärke</string>
+    <string name="ad_volume_warning_title">Auch andere Töne werden leiser</string>
+    <string name="ad_volume_warning">Android hat nur eine Medienlautstärke. Während Werbung läuft, werden auch andere Töne wie Videos oder Navigation leiser.</string>
+    <string name="ad_volume_help_message">Wähle, was passiert, während Spotify Werbung spielt:\n\n• Stumm: Die Werbung ist nicht zu hören.\n• 10 % bis 50 %: Die Werbung läuft mit diesem Anteil deiner aktuellen Lautstärke. Bei 20 % läuft Werbung bei Lautstärke 12 mit etwa 2.\n\nDie Werbung bleibt auf der gewählten Stufe, auch wenn du die Lautstärketasten drückst. Verschiebst du den Regler während einer Werbung, ändert sie sich sofort. Ist die Werbung vorbei, ist deine Lautstärke wieder wie vorher. Hast du dein Handy vor der Werbung stummgeschaltet, bleibt es stumm, bis du den Ton wieder einschaltest.\n\nAndroid hat nur eine Medienlautstärke, daher werden während der Werbung auch andere Töne leiser.</string>
+
+    <string name="tips_title">Tipps</string>
+    <string name="tips_battery">-> Erlaube Mutify, im Hintergrund zu laufen, und schalte alle Akku-Einschränkungen für Mutify aus, damit es zuverlässig funktioniert.</string>
+    <string name="tips_notification_access">-> Mutify braucht Benachrichtigungszugriff, um zu sehen, was Spotify spielt. Es liest nur die Medieninfos von Spotify.</string>
+    <string name="tips_manual_mute">-> Rutscht doch eine Werbung durch, kannst du jederzeit selbst auf Stumm tippen.</string>
+    <string name="tips_contact">-> Bei anderen Problemen kontaktiere uns bitte.</string>
+    <string name="warning_toast_message">Wenn du die App unterstützen willst, hinterlass gern eine Bewertung im Play Store ;)</string>
+
+    <string name="toggle_tips">Tipps ausblenden</string>
+    <string name="auto_launch_spotify">Spotify automatisch öffnen</string>
+    <string name="theme">Design</string>
+    <string name="theme_system">Systemstandard</string>
+    <string name="theme_light">Hell</string>
+    <string name="theme_dark">Dunkel</string>
+    <string name="language">Sprache</string>
+    <string name="about">Über die App</string>
+
+    <string name="support_mutify">Mutify unterstützen</string>
+    <string name="report_bug">Fehler melden</string>
+    <string name="support_message">Mutify ist kostenlos und Open Source. Wenn es dir Werbung erspart, kannst du dem Entwickler einen Kaffee spendieren.</string>
+
+    <string name="update_downloading">Update wird heruntergeladen…</string>
+    <string name="update_canceled">Update abgebrochen…</string>
+    <string name="update_failed">Update fehlgeschlagen…</string>
+    <string name="update_install_failed">Das Update für Mutify konnte nicht installiert werden…</string>
+    <string name="update_downloaded">Ein Update wurde heruntergeladen… Neu starten?</string>
+    <string name="update_restart">Neu starten</string>
+
+    <string name="auto_start_message">Erlaube dieser App den Autostart, damit sie im Hintergrund funktioniert</string>
+    <string name="auto_start_continue">Weiter</string>
+
+    <string name="navigate_up">Nach oben</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_links">Links</string>
+    <string name="contact_us">Kontakt</string>
+    <string name="about_rate">Im Play Store bewerten</string>
+    <string name="about_github">Quellcode auf GitHub ansehen</string>
+    <string name="about_telegram">Telegram-Kanal beitreten</string>
+    <string name="about_privacy_policy">Datenschutzerklärung</string>
+    <string name="about_disclaimer">Haftungsausschluss</string>
+    <string name="about_disclaimer_text">Mutify ist eine unabhängige Open-Source-App. Sie steht in keiner Verbindung zu Spotify AB und wird von Spotify AB weder unterstützt noch empfohlen. Spotify ist eine Marke von Spotify AB.\n\nMutify blockiert, überspringt oder verändert keine Werbung und verändert Spotify nicht. Es dreht nur die Medienlautstärke deines Handys herunter, während Spotify Werbung spielt, und danach wieder hoch. Bitte überleg dir Spotify Premium, um die Musik zu unterstützen, die du hörst.\n\nMutify wird ohne jede Gewährleistung bereitgestellt. Die Nutzung erfolgt auf eigene Gefahr.</string>
+    <string name="about_licenses">Open-Source-Lizenzen</string>
+    <string name="about_licenses_text">Mutify verwendet diese Open-Source-Bibliotheken:\n\n• AndroidX AppCompat, Activity, Core, ConstraintLayout and Navigation (The Android Open Source Project): Apache License 2.0\n\n• Material Components for Android (Google): Apache License 2.0\n\n• Google Play In-App Updates (Google): Play Core Software Development Kit Terms of Service\n\n• Poppins font (Indian Type Foundry): SIL Open Font License 1.1\n\nMutify selbst ist Open Source; den Quellcode findest du auf der GitHub-Seite.</string>
+    <string name="about_contributors">Mitwirkende</string>
+    <string name="contact_us_chooser">E-Mail-App für dein Feedback wählen</string>
+    <string name="link_no_app">Keine App gefunden, die diesen Link öffnen kann</string>
+    <string name="link_no_email_app">Keine E-Mail-App gefunden</string>
+
+    <string name="onboarding_title">Benachrichtigungszugriff erlauben</string>
+    <string name="onboarding_logo_description">Mutify-Logo</string>
+    <string name="onboarding_message">Mutify erkennt über die Medienbenachrichtigung von Spotify, was gerade läuft, und schaltet die Werbung stumm.\n\nDazu musst du Mutify in Android den „Benachrichtigungszugriff“ erlauben. Mutify liest nur die Medieninfos von Spotify und ignoriert alle anderen Benachrichtigungen.</string>
+    <string name="onboarding_open_settings">Einstellungen öffnen</string>
+    <string name="onboarding_restricted_hint">Nicht aus dem Play Store installiert? Wenn der Schalter ausgegraut ist oder Android meldet, dass die Einstellung eingeschränkt ist: Öffne die App-Info, tippe auf ⋮ (oben rechts), wähle „Eingeschränkte Einstellungen zulassen“ und versuch es noch einmal.</string>
+    <string name="onboarding_open_app_info">App-Info öffnen</string>
+    <string name="onboarding_access_missing">Der Benachrichtigungszugriff ist noch aus. Aktiviere Mutify in den Einstellungen und tippe dann auf Fertig.</string>
+    <string name="onboarding_done">Fertig</string>
+    <string name="onboarding_later">Später</string>
+    <string name="onboarding_settings_not_found">Öffne die Einstellungen, suche nach „Benachrichtigungszugriff“ und erlaube Mutify dort</string>
+
+    <string name="widget_description">Schalte die Werbe-Stummschaltung direkt vom Startbildschirm ein oder aus</string>
+    <string name="widget_state_off">Aus</string>
+    <string name="widget_state_on">An</string>
+    <string name="widget_content_description">Mutify: %1$s</string>
+</resources>

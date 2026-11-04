@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Vietnamese ("bạn"). Translator notes live in values/strings.xml. -->
+<resources>
+    <string name="status_ad_muted">QC tắt tiếng</string>
+    <string name="status_setup_needed">Cần thiết lập</string>
+
+    <string name="main_state_setup_needed">Mutify cần quyền truy cập thông báo để biết Spotify đang phát gì. Nhấn vào đây để thiết lập.</string>
+    <string name="main_state_off">Mutify đang tắt. Hãy bật lên để tắt tiếng quảng cáo trên Spotify.</string>
+    <string name="main_state_waiting">Mutify đang bật. Hãy phát một nội dung trên Spotify để xem tại đây.</string>
+    <string name="mute_indicator_ad_muted">Đang tắt tiếng quảng cáo</string>
+    <string name="mute_indicator_ad_quieter">Quảng cáo đang phát nhỏ hơn</string>
+    <string name="mute_indicator_device_muted">Âm lượng nội dung nghe nhìn đang tắt</string>
+
+    <string name="play_state_text">Đang phát</string>
+    <string name="last_detected_song">Bài hát phát hiện gần nhất</string>
+    <string name="now_playing_artist_album">Nghệ sĩ: %1$s\nAlbum: %2$s</string>
+    <string name="now_playing_updated">(cập nhật lúc %1$s)</string>
+    <string name="previous">bài trước</string>
+    <string name="play">phát</string>
+    <string name="pause">tạm dừng</string>
+    <string name="next">bài tiếp theo</string>
+    <string name="mute">Tắt tiếng</string>
+    <string name="unmute">Bật tiếng</string>
+    <string name="open_spotify">Mở Spotify</string>
+    <string name="spotify_not_installed">Chưa cài đặt Spotify</string>
+    <string name="music_image">Hình minh họa âm nhạc</string>
+
+    <string name="ad_volume_title">Âm lượng quảng cáo</string>
+    <string name="ad_volume_help">Các mức có ý nghĩa gì?</string>
+    <string name="ad_volume_step_mute">Tắt tiếng</string>
+    <string name="ad_volume_state_mute">Quảng cáo bị tắt tiếng</string>
+    <string name="ad_volume_state_percent">Quảng cáo phát ở mức %1$d%% âm lượng của bạn</string>
+    <string name="ad_volume_warning_title">Các âm thanh khác cũng nhỏ đi</string>
+    <string name="ad_volume_warning">Android chỉ có một mức âm lượng nội dung nghe nhìn. Khi quảng cáo phát, các âm thanh khác như video hoặc chỉ đường cũng nhỏ đi.</string>
+    <string name="ad_volume_help_message">Chọn điều sẽ xảy ra khi Spotify phát quảng cáo:\n\n• Tắt tiếng: quảng cáo không có âm thanh.\n• 10% đến 50%: quảng cáo phát ở tỷ lệ đó so với âm lượng hiện tại của bạn. Ở mức 20%, quảng cáo ở âm lượng 12 sẽ phát ở khoảng 2.\n\nQuảng cáo giữ nguyên mức bạn đã chọn, kể cả khi bạn nhấn phím âm lượng. Kéo thanh trượt trong lúc quảng cáo phát sẽ thay đổi ngay quảng cáo đó. Khi quảng cáo kết thúc, âm lượng của bạn trở lại như cũ. Nếu bạn đã tắt tiếng điện thoại trước quảng cáo, điện thoại vẫn tắt tiếng cho đến khi bạn bật lại.\n\nAndroid chỉ có một mức âm lượng nội dung nghe nhìn, nên các âm thanh khác cũng nhỏ đi trong lúc quảng cáo phát.</string>
+
+    <string name="tips_title">Mẹo</string>
+    <string name="tips_battery">-> Cho phép Mutify chạy trong nền và tắt mọi tính năng hạn chế pin đối với Mutify để ứng dụng hoạt động đúng cách.</string>
+    <string name="tips_notification_access">-> Mutify cần Quyền truy cập thông báo để biết Spotify đang phát gì. Ứng dụng chỉ đọc thông tin nội dung nghe nhìn của Spotify.</string>
+    <string name="tips_manual_mute">-> Nếu quảng cáo vẫn lọt qua, bạn vẫn có thể nhấn Tắt tiếng theo cách thủ công.</string>
+    <string name="tips_contact">-> Nếu bạn gặp bất kỳ vấn đề nào khác, vui lòng Liên hệ với chúng tôi.</string>
+    <string name="warning_toast_message">Nếu bạn muốn ủng hộ ứng dụng này, hãy cân nhắc để lại đánh giá trên Play Store ;) </string>
+
+    <string name="toggle_tips">Ẩn mẹo</string>
+    <string name="auto_launch_spotify">Tự động mở Spotify</string>
+    <string name="theme">Giao diện</string>
+    <string name="theme_system">Mặc định của hệ thống</string>
+    <string name="theme_light">Sáng</string>
+    <string name="theme_dark">Tối</string>
+    <string name="language">Ngôn ngữ</string>
+    <string name="about">Giới thiệu</string>
+
+    <string name="support_mutify">Ủng hộ Mutify</string>
+    <string name="report_bug">Báo cáo lỗi</string>
+    <string name="support_message">Mutify miễn phí và là mã nguồn mở. Nếu ứng dụng giúp bạn thoát khỏi quảng cáo, bạn có thể mời nhà phát triển một ly cà phê.</string>
+
+    <string name="update_downloading">Đang tải bản cập nhật…</string>
+    <string name="update_canceled">Đã hủy cập nhật…</string>
+    <string name="update_failed">Cập nhật không thành công…</string>
+    <string name="update_install_failed">Không cài đặt được bản cập nhật cho Mutify…</string>
+    <string name="update_downloaded">Đã tải xong bản cập nhật… Khởi động lại?</string>
+    <string name="update_restart">Khởi động lại</string>
+
+    <string name="auto_start_message">Hãy cấp cho ứng dụng này quyền tự khởi động để ứng dụng hoạt động trong nền</string>
+    <string name="auto_start_continue">Tiếp tục</string>
+
+    <string name="navigate_up">Di chuyển lên</string>
+    <string name="about_version">Phiên bản %1$s</string>
+    <string name="about_links">Liên kết</string>
+    <string name="contact_us">Liên hệ với chúng tôi</string>
+    <string name="about_rate">Đánh giá trên Play Store</string>
+    <string name="about_github">Xem mã nguồn trên GitHub</string>
+    <string name="about_telegram">Tham gia kênh Telegram</string>
+    <string name="about_privacy_policy">Chính sách quyền riêng tư</string>
+    <string name="about_disclaimer">Tuyên bố miễn trừ trách nhiệm</string>
+    <string name="about_disclaimer_text">Mutify là một ứng dụng nguồn mở độc lập. Mutify không liên kết, không được chứng thực và không có bất kỳ mối liên hệ nào với Spotify AB. Spotify là nhãn hiệu của Spotify AB.\n\nMutify không chặn, bỏ qua hay thay đổi quảng cáo và không sửa đổi Spotify. Ứng dụng chỉ giảm âm lượng nội dung nghe nhìn của điện thoại khi Spotify phát quảng cáo và tăng lại khi quảng cáo kết thúc. Hãy cân nhắc dùng Spotify Premium để ủng hộ các nghệ sĩ mà bạn nghe.\n\nMutify được cung cấp nguyên trạng, không kèm bất kỳ bảo đảm nào. Bạn tự chịu rủi ro khi sử dụng.</string>
+    <string name="about_licenses">Giấy phép nguồn mở</string>
+    <string name="about_licenses_text">Mutify được xây dựng bằng các thư viện nguồn mở sau:\n\n• AndroidX AppCompat, Activity, Core, ConstraintLayout và Navigation (The Android Open Source Project): Apache License 2.0\n\n• Material Components for Android (Google): Apache License 2.0\n\n• Google Play In-App Updates (Google): Play Core Software Development Kit Terms of Service\n\n• Phông chữ Poppins (Indian Type Foundry): SIL Open Font License 1.1\n\nBản thân Mutify cũng là nguồn mở; hãy xem trang GitHub của Mutify để biết mã nguồn.</string>
+    <string name="about_contributors">Người đóng góp</string>
+    <string name="contact_us_chooser">Chọn ứng dụng email để gửi phản hồi</string>
+    <string name="link_no_app">Không tìm thấy ứng dụng để mở đường liên kết này</string>
+    <string name="link_no_email_app">Không tìm thấy ứng dụng email</string>
+
+    <string name="onboarding_title">Cho phép quyền truy cập thông báo</string>
+    <string name="onboarding_logo_description">Biểu trưng Mutify</string>
+    <string name="onboarding_message">Mutify biết Spotify đang phát gì qua thông báo nội dung nghe nhìn của Spotify và tắt tiếng quảng cáo.\n\nĐể làm được điều đó, Android cần bạn bật \'Quyền truy cập thông báo\' cho Mutify. Mutify chỉ đọc thông tin nội dung nghe nhìn của Spotify và bỏ qua mọi thông báo khác.</string>
+    <string name="onboarding_open_settings">Mở cài đặt</string>
+    <string name="onboarding_restricted_hint">Đã cài đặt bên ngoài Play Store? Nếu nút chuyển bị mờ hoặc Android báo chế độ cài đặt bị hạn chế: mở Thông tin ứng dụng, nhấn ⋮ (góc trên bên phải), chọn \'Cho phép chế độ cài đặt bị hạn chế\' rồi thử lại.</string>
+    <string name="onboarding_open_app_info">Mở Thông tin ứng dụng</string>
+    <string name="onboarding_access_missing">Quyền truy cập thông báo vẫn đang tắt. Hãy bật Mutify trong phần cài đặt, sau đó nhấn Xong.</string>
+    <string name="onboarding_done">Xong</string>
+    <string name="onboarding_later">Để sau</string>
+    <string name="onboarding_settings_not_found">Mở Cài đặt, tìm “Quyền truy cập thông báo” và cho phép Mutify</string>
+
+    <string name="widget_description">Bật hoặc tắt tính năng tắt tiếng quảng cáo từ màn hình chính</string>
+    <string name="widget_state_off">Tắt</string>
+    <string name="widget_state_on">Bật</string>
+    <string name="widget_content_description">Mutify: %1$s</string>
+</resources>

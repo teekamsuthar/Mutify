@@ -2,27 +2,81 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="live.teekamsuthar.mutify.MainActivity">
+    <!-- 2.6.2's toolbar actions: heart (support the developer) and bug (report a problem) -->
+    <item
+        android:id="@+id/support"
+        android:icon="@drawable/ic_baseline_favorite_border_24"
+        android:title="@string/support_mutify"
+        app:iconTint="@color/on_brand_bar"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/reportBug"
+        android:icon="@drawable/ic_baseline_bug_report_24"
+        android:title="@string/report_bug"
+        app:iconTint="@color/on_brand_bar"
+        app:showAsAction="always" />
     <item
         android:id="@+id/toggleTips"
         android:checkable="true"
         android:title="@string/toggle_tips"
         app:showAsAction="never" />
     <item
-        android:id="@+id/toggleDarkMode"
-        android:checkable="true"
-        android:title="@string/enable_dark_mode"
-        app:showAsAction="never" />
+        android:id="@+id/theme"
+        android:title="@string/theme"
+        app:showAsAction="never">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/themeSystem"
+                    android:title="@string/theme_system" />
+                <item
+                    android:id="@+id/themeLight"
+                    android:title="@string/theme_light" />
+                <item
+                    android:id="@+id/themeDark"
+                    android:title="@string/theme_dark" />
+            </group>
+        </menu>
+    </item>
+    <!-- app language: System default plus the shipped languages, each named in its own language -->
+    <item
+        android:id="@+id/language"
+        android:title="@string/language"
+        app:showAsAction="never">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/languageSystem"
+                    android:title="@string/theme_system" />
+                <item
+                    android:id="@+id/languageEnglish"
+                    android:title="@string/language_english" />
+                <item
+                    android:id="@+id/languageGerman"
+                    android:title="@string/language_german" />
+                <item
+                    android:id="@+id/languageSpanish"
+                    android:title="@string/language_spanish" />
+                <item
+                    android:id="@+id/languageFrench"
+                    android:title="@string/language_french" />
+                <item
+                    android:id="@+id/languagePortugueseBrazil"
+                    android:title="@string/language_portuguese_brazil" />
+                <item
+                    android:id="@+id/languageVietnamese"
+                    android:title="@string/language_vietnamese" />
+            </group>
+        </menu>
+    </item>
     <item
         android:id="@+id/autoLaunchSpotify"
         android:checkable="true"
         android:title="@string/auto_launch_spotify"
         app:showAsAction="never" />
+    <!-- Contact Us and Rate live on the About screen, as in 2.6.2 -->
     <item
-        android:id="@+id/play_store_link"
-        android:title="@string/rate_app_in_play_store"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/contact_us"
-        android:title="@string/contact_us"
+        android:id="@+id/about"
+        android:title="@string/about"
         app:showAsAction="never" />
 </menu>

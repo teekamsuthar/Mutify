@@ -2,8 +2,11 @@ package live.teekamsuthar.mutify;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaMetadata;
 import android.media.session.MediaController;
@@ -20,13 +23,15 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 import java.util.List;
 
 import static live.teekamsuthar.mutify.Utils.SPOTIFY_PACKAGE;
 
 /**
- * Mutes the music stream while Spotify plays an ad.
+ * Mutes the music stream while Spotify plays an ad, or plays the ad quieter
+ * ({@link MutifySettings#getAdVolumeStep()}; the rules are in {@link AdVolumeSession}).
  * <p>
  * Replaces the old approach that listened to Spotify's "Device Broadcast Status" intents, which
  * newer Spotify versions no longer send. A notification listener is the only way for a normal
@@ -34,26 +39,57 @@ import static live.teekamsuthar.mutify.Utils.SPOTIFY_PACKAGE;
  * binds this service and lets it follow Spotify's session — the same metadata the lock screen
  * shows — and {@link AdDetector} decides from it whether the current item is an ad.
  * <p>
- * The system keeps this service bound independently of {@link MainActivity}; it only mutes while
- * the user has the "Mute Ads" switch on ({@link #isMutingEnabled(Context)}).
+ * The system keeps this service bound independently of {@link MainActivity}, so muting goes on
+ * with the app closed or swiped away. It only mutes while Mutify is switched on
+ * ({@link MutifySettings#isEnabled()}), follows that setting live, and reports ad start and end to
+ * {@link StatusPublisher}.
+ * <p>
+ * While an ad plays it follows the music volume and keeps the ad at the chosen step: a volume key
+ * pressed during the ad, or the stream being unmuted, is answered by applying the step again, and a
+ * new step chosen during the ad applies to that ad at once. Afterwards the volume from before the ad
+ * comes back. An ad counts only while Spotify plays it: paused or stopped on an ad, the volume comes
+ * back, and it is lowered again when the ad resumes.
  */
 public class SpotifyAdListenerService extends NotificationListenerService {
 
     private static final String TAG = "SpotifyAdListener";
-    private static final String PREF_MUTING_ENABLED = "mute_ads_enabled";
     /** Wait a moment after an ad before unmuting, so its last bit does not leak out. */
     private static final long UNMUTE_DELAY_MS = 600;
-
-    @Nullable
-    private static SpotifyAdListenerService instance;
+    /** Sent by the system when a stream's volume changes; not public API, but sent for many years. */
+    private static final String ACTION_VOLUME_CHANGED = "android.media.VOLUME_CHANGED_ACTION";
+    /** Sent by the system when a stream is muted or unmuted; not public API either. */
+    private static final String ACTION_STREAM_MUTE_CHANGED = "android.media.STREAM_MUTE_CHANGED_ACTION";
 
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final Runnable unmuteRunnable = this::endAdMute;
+    private final Runnable adEndRunnable = this::endAd;
+    private final AdVolumeSession adVolume = new AdVolumeSession();
+    private final BroadcastReceiver volumeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (adVolume.isActive() && audioManager != null) {
+                int volume = musicVolume();
+                // Mutify's own change, seen here too, matches the step and needs nothing
+                AdVolumeSession.Action correction = adVolume.observe(volume);
+                if (correction.kind != AdVolumeSession.Kind.NONE) {
+                    apply(correction);
+                    Log.i(TAG, "Volume changed to " + volume + " during an ad: " + correction);
+                }
+            }
+        }
+    };
     private final MediaSessionManager.OnActiveSessionsChangedListener sessionsChangedListener =
             controllers -> {
                 watchSpotify(findSpotify(controllers));
                 evaluate();
             };
+    private final MutifySettings.Listener settingsListener = key -> {
+        Log.i(TAG, "Setting changed: " + key);
+        if (MutifySettings.KEY_ENABLED.equals(key)) {
+            evaluate();
+        } else if (MutifySettings.KEY_AD_VOLUME_STEP.equals(key)) {
+            changeAdVolumeStep();
+        }
+    };
     private final MediaController.Callback spotifyCallback = new MediaController.Callback() {
         @Override
         public void onMetadataChanged(@Nullable MediaMetadata metadata) {
@@ -72,6 +108,8 @@ public class SpotifyAdListenerService extends NotificationListenerService {
         }
     };
 
+    private MutifySettings settings;
+    private StatusPublisher statusPublisher;
     private AudioManager audioManager;
     private MediaSessionManager sessionManager;
     @Nullable
@@ -81,25 +119,11 @@ public class SpotifyAdListenerService extends NotificationListenerService {
     private Notification spotifyNotification;
     @Nullable
     private String spotifyNotificationKey;
-    /** An ad is playing (or just ended and the delayed unmute is pending). */
-    private boolean adMuteActive;
-    /** This service muted the stream, so it may unmute it — never undo a mute the user made. */
-    private boolean mutedByUs;
+    /** The ad is over and {@link #endAd()} is scheduled; scheduled once per ad end, not per callback. */
+    private boolean adEndPending;
+    private boolean volumeReceiverRegistered;
 
     // ---- static API for the UI -------------------------------------------------------------
-
-    public static boolean isMutingEnabled(Context context) {
-        return Utils.getPrefs(context).getBoolean(PREF_MUTING_ENABLED, false);
-    }
-
-    /** Turns ad muting on or off; turning it off during an ad unmutes right away. */
-    public static void setMutingEnabled(Context context, boolean enabled) {
-        Utils.getPrefs(context).edit().putBoolean(PREF_MUTING_ENABLED, enabled).apply();
-        SpotifyAdListenerService service = instance;
-        if (service != null) {
-            service.handler.post(service::evaluate);
-        }
-    }
 
     public static boolean hasNotificationAccess(Context context) {
         return NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.getPackageName());
@@ -126,7 +150,9 @@ public class SpotifyAdListenerService extends NotificationListenerService {
     @Override
     public void onListenerConnected() {
         super.onListenerConnected();
-        instance = this;
+        settings = MutifySettings.get(this);
+        statusPublisher = StatusPublisher.get(this);
+        settings.addListener(settingsListener);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         sessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
         try {
@@ -145,6 +171,7 @@ public class SpotifyAdListenerService extends NotificationListenerService {
             Log.w(TAG, "Cannot read active notifications", e);
         }
         evaluate();
+        statusPublisher.refresh(); // notification access may just have been granted
         Log.i(TAG, "Connected, watching Spotify: " + (spotify != null));
     }
 
@@ -156,12 +183,29 @@ public class SpotifyAdListenerService extends NotificationListenerService {
         watchSpotify(null);
         spotifyNotification = null;
         spotifyNotificationKey = null;
-        handler.removeCallbacks(unmuteRunnable);
-        endAdMute();
-        if (instance == this) {
-            instance = null;
+        endAd();
+        if (settings != null) {
+            settings.removeListener(settingsListener);
+        }
+        if (statusPublisher != null) {
+            statusPublisher.refresh(); // notification access may just have been revoked
         }
         super.onListenerDisconnected();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (adVolume.isActive() || adEndPending) {
+            // destroyed without onListenerDisconnected, maybe inside the unmute delay: restore now,
+            // before the pending end is cleared with the handler's callbacks below
+            endAd();
+        }
+        unwatchVolume();
+        if (settings != null) {
+            settings.removeListener(settingsListener);
+        }
+        handler.removeCallbacksAndMessages(null);
+        super.onDestroy();
     }
 
     @Override
@@ -214,26 +258,42 @@ public class SpotifyAdListenerService extends NotificationListenerService {
         if (audioManager == null) {
             return; // not connected yet
         }
-        boolean ad = isMutingEnabled(this) && isAdPlaying();
+        boolean enabled = settings.isEnabled();
+        boolean ad = enabled && isAdPlaying();
         if (ad) {
-            handler.removeCallbacks(unmuteRunnable);
-            if (!adMuteActive) {
-                beginAdMute();
+            if (adEndPending) {
+                // the next ad started before the last one's end was carried out: one session goes on
+                handler.removeCallbacks(adEndRunnable);
+                adEndPending = false;
             }
-        } else if (adMuteActive) {
-            handler.removeCallbacks(unmuteRunnable);
-            handler.postDelayed(unmuteRunnable, isMutingEnabled(this) ? UNMUTE_DELAY_MS : 0);
+            if (!adVolume.isActive()) {
+                beginAd();
+            }
+        } else if (adVolume.isActive()) {
+            if (!enabled) {
+                // switched off during an ad: sound back right away
+                Log.i(TAG, "Switched off during an ad: ending it now");
+                endAd();
+            } else if (!adEndPending) {
+                // once per ad end: later callbacks (position, metadata) must not push the end back
+                adEndPending = true;
+                handler.postDelayed(adEndRunnable, UNMUTE_DELAY_MS);
+            }
         }
     }
 
     // lint only knows the documented long keys; the ADVERTISEMENT key is real but not in its list
     @SuppressLint("WrongConstant")
     private boolean isAdPlaying() {
+        MediaMetadata metadata = null;
         if (spotify != null) {
-            MediaMetadata metadata = spotify.getMetadata();
-            if (metadata == null) {
+            if (!isPlaying(spotify.getPlaybackState())) {
+                // paused or stopped on an ad: the rest of the phone must not stay muted meanwhile
                 return false;
             }
+            metadata = spotify.getMetadata();
+        }
+        if (metadata != null) {
             boolean ad = AdDetector.isAd(
                     metadata.getLong(AdDetector.METADATA_KEY_ADVERTISEMENT),
                     metadata.getString(MediaMetadata.METADATA_KEY_MEDIA_ID),
@@ -248,42 +308,137 @@ public class SpotifyAdListenerService extends NotificationListenerService {
             return ad;
         }
         if (spotifyNotification != null && spotifyNotification.extras != null) {
-            // no session visible: fall back to the text of Spotify's media notification
+            // no session visible, or it has no metadata: fall back to the text of Spotify's media
+            // notification (it has no duration, so AdDetector asks for more than the label)
             Bundle extras = spotifyNotification.extras;
-            return AdDetector.isAd(0L, null, 0L,
+            boolean ad = AdDetector.isAd(0L, null, 0L,
                     extras.getCharSequence(Notification.EXTRA_TITLE),
                     extras.getCharSequence(Notification.EXTRA_TEXT),
                     extras.getCharSequence(Notification.EXTRA_SUB_TEXT));
+            Log.v(TAG, "Spotify notification '" + extras.getCharSequence(Notification.EXTRA_TITLE) + "' ad=" + ad);
+            return ad;
         }
         return false;
     }
 
-    private void beginAdMute() {
-        adMuteActive = true;
-        if (isMusicMuted()) {
-            Log.i(TAG, "Ad detected, music already muted by the user");
-            return;
+    /**
+     * Spotify plays, or is about to (buffering, connecting); unknown counts as playing. An ad
+     * that is paused or stopped is no reason to keep the music stream muted.
+     */
+    private static boolean isPlaying(@Nullable PlaybackState state) {
+        if (state == null) {
+            return true;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);
-        } else {
-            audioManager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+        switch (state.getState()) {
+            case PlaybackState.STATE_PLAYING:
+            case PlaybackState.STATE_BUFFERING:
+            case PlaybackState.STATE_CONNECTING:
+                return true;
+            default:
+                return false;
         }
-        mutedByUs = true;
-        Log.i(TAG, "Ad detected, muted");
     }
 
-    private void endAdMute() {
-        if (mutedByUs && audioManager != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0);
-            } else {
-                audioManager.setStreamMute(AudioManager.STREAM_MUSIC, false);
-            }
-            Log.i(TAG, "Ad over, unmuted");
+    private void beginAd() {
+        int volume = musicVolume();
+        int step = settings.getAdVolumeStep();
+        AdVolumeSession.Action action =
+                adVolume.begin(volume, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), step);
+        apply(action);
+        watchVolume(); // after applying, so the change Mutify just made is the expected one
+        Log.i(TAG, "Ad detected at volume " + volume + ", step " + step + ": " + action);
+        statusPublisher.setAdActive(true); // after muting, so surfaces see the muted stream
+    }
+
+    /** The user picked another ad volume step; applies it to the running ad, if any. */
+    private void changeAdVolumeStep() {
+        if (!adVolume.isActive() || audioManager == null) {
+            return;
         }
-        mutedByUs = false;
-        adMuteActive = false;
+        int volume = musicVolume();
+        int step = settings.getAdVolumeStep();
+        AdVolumeSession.Action action = adVolume.changeStep(volume, step);
+        apply(action);
+        Log.i(TAG, "Ad volume step changed to " + step + " during an ad at volume " + volume + ": " + action);
+    }
+
+    /** The ad is over, or Mutify was switched off or lost notification access during it. */
+    private void endAd() {
+        handler.removeCallbacks(adEndRunnable);
+        adEndPending = false;
+        unwatchVolume();
+        if (adVolume.isActive() && audioManager != null) {
+            int volume = musicVolume();
+            AdVolumeSession.Action action = adVolume.end(volume);
+            apply(action);
+            Log.i(TAG, "Ad over at volume " + volume + ": " + action);
+        }
+        if (statusPublisher != null) {
+            statusPublisher.setAdActive(false);
+        }
+    }
+
+    private void apply(AdVolumeSession.Action action) {
+        switch (action.kind) {
+            case MUTE:
+                setMusicMuted(true);
+                break;
+            case UNMUTE:
+                setMusicMuted(false);
+                break;
+            case SET_VOLUME:
+            case RESTORE:
+                setMusicVolume(action.volume);
+                break;
+            case UNMUTE_AND_SET_VOLUME:
+            case UNMUTE_AND_RESTORE:
+                setMusicVolume(action.volume); // first, so the volume the stream was muted at never plays
+                setMusicMuted(false);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void setMusicVolume(int volume) {
+        try {
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+        } catch (SecurityException e) {
+            // volume changes can be refused, e.g. in some Do Not Disturb modes
+            Log.w(TAG, "Cannot set the music volume", e);
+        }
+    }
+
+    private void setMusicMuted(boolean muted) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                    muted ? AudioManager.ADJUST_MUTE : AudioManager.ADJUST_UNMUTE, 0);
+        } else {
+            audioManager.setStreamMute(AudioManager.STREAM_MUSIC, muted);
+        }
+    }
+
+    /** The music volume as the user hears it: 0 while the stream is muted. */
+    private int musicVolume() {
+        return isMusicMuted() ? 0 : audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+    }
+
+    /** Follows volume changes during an ad, so the ad stays at the chosen step. */
+    private void watchVolume() {
+        if (!volumeReceiverRegistered) {
+            IntentFilter filter = new IntentFilter(ACTION_VOLUME_CHANGED);
+            filter.addAction(ACTION_STREAM_MUTE_CHANGED);
+            // only the system sends these, so the receiver need not be exported
+            ContextCompat.registerReceiver(this, volumeReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
+            volumeReceiverRegistered = true;
+        }
+    }
+
+    private void unwatchVolume() {
+        if (volumeReceiverRegistered) {
+            unregisterReceiver(volumeReceiver);
+            volumeReceiverRegistered = false;
+        }
     }
 
     private boolean isMusicMuted() {

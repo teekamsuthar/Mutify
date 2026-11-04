@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- French. Context, length limits and Android setting names: see the comments in values/strings.xml. -->
+<resources>
+    <string name="status_ad_muted">Pub coupée</string>
+    <string name="status_setup_needed">À configurer</string>
+
+    <string name="main_state_setup_needed">Mutify a besoin de l\'accès aux notifications pour voir ce que lit Spotify. Appuyez ici pour le configurer.</string>
+    <string name="main_state_off">Mutify est désactivé. Activez-le pour couper le son des pubs Spotify.</string>
+    <string name="main_state_waiting">Mutify est activé. Lancez un titre dans Spotify pour le voir ici.</string>
+    <string name="mute_indicator_ad_muted">Pub coupée en ce moment</string>
+    <string name="mute_indicator_ad_quieter">Pub diffusée moins fort</string>
+    <string name="mute_indicator_device_muted">Le volume multimédia est coupé</string>
+
+    <string name="play_state_text">En cours de lecture</string>
+    <string name="last_detected_song">Dernier titre détecté</string>
+    <string name="now_playing_artist_album">Par %1$s\nAlbum : %2$s</string>
+    <string name="now_playing_updated">(infos mises à jour à %1$s)</string>
+    <string name="previous">Titre précédent</string>
+    <string name="play">Lecture</string>
+    <string name="pause">Pause</string>
+    <string name="next">Titre suivant</string>
+    <string name="mute">Couper le son</string>
+    <string name="unmute">Rétablir le son</string>
+    <string name="open_spotify">Ouvrir Spotify</string>
+    <string name="spotify_not_installed">Spotify n\'est pas installé</string>
+    <string name="music_image">Illustration musicale</string>
+
+    <string name="ad_volume_title">Volume des pubs</string>
+    <string name="ad_volume_help">Que signifient les niveaux ?</string>
+    <string name="ad_volume_step_mute">Muet</string>
+    <string name="ad_volume_state_mute">Le son des pubs est coupé</string>
+    <string name="ad_volume_state_percent">Les pubs sont diffusées à %1$d %% de votre volume</string>
+    <string name="ad_volume_warning_title">Les autres sons baissent aussi</string>
+    <string name="ad_volume_warning">Android n\'a qu\'un seul volume multimédia. Pendant une pub, les autres sons, comme les vidéos ou la navigation, baissent aussi.</string>
+    <string name="ad_volume_help_message">Choisissez ce qui se passe pendant une pub Spotify :\n\n• Muet : la pub est silencieuse.\n• 10 % à 50 % : la pub est diffusée à ce pourcentage de votre volume actuel. À 20 %, une pub au volume 12 est diffusée à environ 2.\n\nLa pub reste au niveau choisi, même si vous appuyez sur les touches de volume. Si vous déplacez le curseur pendant une pub, elle change aussitôt. Une fois la pub terminée, votre volume revient à son niveau d\'avant. Si vous aviez coupé le son de votre téléphone avant la pub, il reste coupé jusqu\'à ce que vous le rétablissiez.\n\nAndroid n\'a qu\'un seul volume multimédia, les autres sons baissent donc aussi pendant une pub.</string>
+
+    <string name="tips_title">Astuces</string>
+    <string name="tips_battery">-> Autorisez Mutify à s\'exécuter en arrière-plan et désactivez toute restriction de batterie pour Mutify afin qu\'il fonctionne correctement.</string>
+    <string name="tips_notification_access">-> Mutify a besoin de l\'accès aux notifications pour voir ce que lit Spotify. Il ne consulte que les infos multimédias de Spotify.</string>
+    <string name="tips_manual_mute">-> Si une pub passe quand même, vous pouvez toujours appuyer sur Couper le son.</string>
+    <string name="tips_contact">-> Pour tout autre problème, contactez-nous.</string>
+    <string name="warning_toast_message">Si vous voulez soutenir cette appli, pensez à laisser un avis sur le Play Store ;)</string>
+
+    <string name="toggle_tips">Masquer les astuces</string>
+    <string name="auto_launch_spotify">Ouvrir Spotify automatiquement</string>
+    <string name="theme">Thème</string>
+    <string name="theme_system">Par défaut du système</string>
+    <string name="theme_light">Clair</string>
+    <string name="theme_dark">Sombre</string>
+    <string name="language">Langue</string>
+    <string name="about">À propos</string>
+
+    <string name="support_mutify">Soutenir Mutify</string>
+    <string name="report_bug">Signaler un bug</string>
+    <string name="support_message">Mutify est gratuit et open source. S\'il vous épargne les pubs, vous pouvez offrir un café au développeur.</string>
+
+    <string name="update_downloading">Téléchargement de la mise à jour…</string>
+    <string name="update_canceled">Mise à jour annulée…</string>
+    <string name="update_failed">Échec de la mise à jour…</string>
+    <string name="update_install_failed">Impossible d\'installer la mise à jour de Mutify…</string>
+    <string name="update_downloaded">Une mise à jour vient d\'être téléchargée… Redémarrer ?</string>
+    <string name="update_restart">Redémarrer</string>
+
+    <string name="auto_start_message">Autorisez le démarrage automatique de cette appli pour qu\'elle fonctionne en arrière-plan</string>
+    <string name="auto_start_continue">Continuer</string>
+
+    <string name="navigate_up">Revenir en haut de la page</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_links">Liens</string>
+    <string name="contact_us">Nous contacter</string>
+    <string name="about_rate">Noter sur le Play Store</string>
+    <string name="about_github">Voir le code source sur GitHub</string>
+    <string name="about_telegram">Rejoindre la chaîne Telegram</string>
+    <string name="about_privacy_policy">Règles de confidentialité</string>
+    <string name="about_disclaimer">Avertissement</string>
+    <string name="about_disclaimer_text">Mutify est une application open source indépendante. Elle n\'est ni affiliée à Spotify AB, ni approuvée par Spotify AB, ni liée à cette société de quelque manière que ce soit. Spotify est une marque de Spotify AB.\n\nMutify ne bloque pas les pubs, ne les saute pas et ne les modifie pas, et il ne modifie pas Spotify. Il baisse simplement le volume multimédia de votre téléphone pendant une pub Spotify, puis le remonte une fois la pub terminée. Pensez à Spotify Premium pour soutenir les artistes que vous écoutez.\n\nMutify est fourni tel quel, sans aucune garantie. Son utilisation est à vos propres risques.</string>
+    <string name="about_licenses">Licences open source</string>
+    <string name="about_licenses_text">Mutify utilise ces bibliothèques open source :\n\n• AndroidX AppCompat, Activity, Core, ConstraintLayout and Navigation (The Android Open Source Project): Apache License 2.0\n\n• Material Components for Android (Google): Apache License 2.0\n\n• Google Play In-App Updates (Google): Play Core Software Development Kit Terms of Service\n\n• Poppins font (Indian Type Foundry): SIL Open Font License 1.1\n\nMutify est lui-même open source ; son code source se trouve sur sa page GitHub.</string>
+    <string name="about_contributors">Contributeurs</string>
+    <string name="contact_us_chooser">Choisissez une application de messagerie pour envoyer vos commentaires</string>
+    <string name="link_no_app">Aucune application trouvée pour ouvrir ce lien</string>
+    <string name="link_no_email_app">Aucune application de messagerie trouvée</string>
+
+    <string name="onboarding_title">Autoriser l\'accès aux notifications</string>
+    <string name="onboarding_logo_description">Logo de Mutify</string>
+    <string name="onboarding_message">Mutify voit ce que lit Spotify grâce à la notification multimédia de Spotify, et coupe le son des pubs.\n\nPour cela, Android vous demande d\'autoriser l\'« Accès aux notifications » pour Mutify. Mutify ne lit que les infos multimédias de Spotify et ignore toutes les autres notifications.</string>
+    <string name="onboarding_open_settings">Ouvrir les paramètres</string>
+    <string name="onboarding_restricted_hint">Appli installée en dehors du Play Store ? Si le bouton est grisé ou si Android indique que le paramètre est restreint : ouvrez Infos sur l\'appli, appuyez sur ⋮ (en haut à droite), choisissez « Autoriser les paramètres restreints » et réessayez.</string>
+    <string name="onboarding_open_app_info">Ouvrir Infos sur l\'appli</string>
+    <string name="onboarding_access_missing">L\'accès aux notifications est toujours désactivé. Activez Mutify dans les paramètres, puis appuyez sur OK.</string>
+    <string name="onboarding_done">OK</string>
+    <string name="onboarding_later">Plus tard</string>
+    <string name="onboarding_settings_not_found">Ouvrez les Paramètres, recherchez « Accès aux notifications » et autorisez Mutify</string>
+
+    <string name="widget_description">Activez ou désactivez la coupure des pubs depuis l\'écran d\'accueil</string>
+    <string name="widget_state_off">Désactivé</string>
+    <string name="widget_state_on">Activé</string>
+    <string name="widget_content_description">Mutify : %1$s</string>
+</resources>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Quick Settings tile icon: the Mutify logo as a one-colour silhouette. White only; the system
+     tints it per tile state.
+     Generated from the shapes of mutify_logo_without_bg (same 330 viewport) with thicker strokes,
+     so it matches the launcher icon and stays legible at small sizes. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="330"
+    android:viewportHeight="330">
+    <group>
+        <!-- everything except a band around the slash, so the slash reads as its own stroke -->
+        <clip-path android:pathData="M30,0H330V300ZM0,40V330H290Z" />
+        <!-- the three sound waves -->
+        <path
+            android:pathData="M203.15,63.63c51.7,0 79.44,39.5 80.85,79.46c0,38.7 -24.67,82.23 -80.85,82.23"
+            android:strokeWidth="14"
+            android:strokeColor="@android:color/white" />
+        <path
+            android:pathData="M203.15,86.54c34.47,0 55.66,28.63 56.6,57.26c0,27.73 -19.14,58.62 -56.6,58.62"
+            android:strokeWidth="14"
+            android:strokeColor="@android:color/white" />
+        <path
+            android:pathData="M203.15,113.48c21.55,0 33.1,15.15 33.69,30.47c0,14.83 -10.28,31.52 -33.69,31.52"
+            android:strokeWidth="14"
+            android:strokeColor="@android:color/white" />
+        <!-- the back box -->
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M15,118.67c0,-4.42 3.58,-8 8,-8h59.62v67.61H23c-4.42,0 -8,-3.58 -8,-8v-51.61z" />
+        <!-- cone and handle, kept a few units clear of the box (two colours in the launcher icon) -->
+        <group>
+            <clip-path android:pathData="M90,0H330V330H0V186H90Z" />
+            <path
+                android:fillColor="@android:color/white"
+                android:pathData="M82.42,250.31l-60.54,-72.03h60.54l21.46,72.03H82.42zM23.82,144.48L189.19,49v190.95L23.82,144.48z" />
+        </group>
+    </group>
+    <!-- the slash -->
+    <path
+        android:pathData="M250.83,255.44L49.3,53.91"
+        android:strokeWidth="20"
+        android:strokeLineCap="round"
+        android:strokeColor="@android:color/white" />
+</vector>

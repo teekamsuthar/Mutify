@@ -16,7 +16,10 @@ import java.util.regex.Pattern;
  *     <li>a media ID with Spotify's ad URI scheme ({@code spotify:ad:...}),</li>
  *     <li>a title/artist/notification text that is exactly Spotify's localized "Advertisement"
  *     label — only trusted for short items, so a real song called e.g. "Propaganda" or
- *     "Werbung" is not muted.</li>
+ *     "Werbung" is not muted. When the duration is unknown (the media notification has none),
+ *     the label counts only if no text names a song, artist or album: every text is the label,
+ *     Spotify's own name or empty. A band called "Propaganda", or Sparks' "Propaganda" on the
+ *     album "Propaganda", is then still no ad.</li>
  * </ol>
  * Plain Java on purpose, so it can be unit tested without Android.
  */
@@ -29,6 +32,7 @@ final class AdDetector {
     static final long MAX_TEXT_MATCHED_AD_DURATION_MS = 90_000;
 
     private static final Pattern COMBINING_MARKS = Pattern.compile("\\p{M}+");
+    private static final String SPOTIFY_NAME = "spotify";
 
     /**
      * Spotify's translations of its "Advertisement" label (resource {@code string/advertisement}),
@@ -69,17 +73,34 @@ final class AdDetector {
         if (durationMs > MAX_TEXT_MATCHED_AD_DURATION_MS) {
             return false;
         }
+        boolean label = false;
+        boolean songText = false;
         for (CharSequence text : texts) {
             if (isAdLabel(text)) {
-                return true;
+                label = true;
+            } else if (!isBlank(text) && !isSpotifyName(text)) {
+                songText = true;
             }
         }
-        return false;
+        if (durationMs > 0) {
+            return label; // a short item: the label alone is enough
+        }
+        // unknown duration: the label alone could be a song's title, artist or album
+        return label && !songText;
     }
 
     /** True when the whole text is Spotify's "Advertisement" label in any language. */
     static boolean isAdLabel(CharSequence text) {
         return text != null && AD_LABELS.contains(fold(text.toString()));
+    }
+
+    private static boolean isBlank(CharSequence text) {
+        return text == null || text.toString().trim().isEmpty();
+    }
+
+    /** Spotify names itself as the artist of some ads (seen by ad-silence). */
+    private static boolean isSpotifyName(CharSequence text) {
+        return SPOTIFY_NAME.equals(fold(text.toString()));
     }
 
     private static String fold(String text) {
